@@ -71,17 +71,18 @@ Tit for Tat always plays what the other player has played previously. It always 
 - TFT is not the best awnser to RANDOM
 - u(TFT, TFT) is a Nash-Equilibrium but no Subgame perfect equilibrium. For a situation (D,C): u(TF2T,TFT) scores more points than u(TFT, TFT). (Only if $R > \frac{T+S}{2}$)
 
-## Joss
+## Suspicious Tit-for-Tat (DTFT)
 
-Joss is exactly the same as TFT but has a probability of $p$ to select defection each round.
+Suspicious Tit-for-Tat is exactly like Tit-for-Tat but it starts with defaction rather than cooperation on the first turn.
 
 ##### Advantages
 
-- exploits "Always C" better than TFT
+- Cannot be exploited at the first turn
 
 ##### Disadvantages
 
-- If Joss plays against TFT it can result in interchanged cooperation and defection after Joss chose defection for the first time. After Joss played defection for the second time, they each play defection for the rest of the game
+- Most other strategies start to also defect, if you start with defection
+- Leads to interchanged cooperation and defection against Tit-for-Tat from the beginning on (which is not optimal in most cases)
 
 ## Tit-for-two-Tat (TF2T)
 
