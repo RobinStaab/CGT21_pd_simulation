@@ -1,0 +1,187 @@
+from random import seed, random
+import numpy as np
+from Player import Player
+from sortedcontainers import SortedDict
+
+class Simulator:
+
+    def __init__(self, grid_x: int, grid_y: int, 
+                    num_players: int, play_window: int, travel_window: int, players, 
+                    T:float , R: float, S: float, P: float,  rand_seed=42) -> None:
+        """ Initializes the Simulator
+
+        Args:
+            grid_x (int): x dimension of the grid
+            grid_y (int): y dimension of the grid
+            num_players (int): Total number of players
+            play_window (int): Size of the window in which players play against each other
+            travel_window (int): Size of the window in which players travel
+            players (List[PlayerCFG]): List of player configurations 
+            T (float): T value
+            R (float): R value
+            S (float): S value
+            P (float): P value
+            rand_seed (int, optional): Random Seed. Defaults to 42.
+        """
+        # Fix seeds
+        seed(rand_seed)
+        np.random.seed(rand_seed)
+
+        # Set basic variables
+        self.grid_x = grid_x
+        self.grid_y = grid_y
+        self.num_players = num_players
+        self.play_window = play_window
+        self.travel_window = travel_window
+        
+        # We save the match-ups in a dict per player - This allows access in O(log(n)), and more importantly migration in O(log(n))
+        # Match-ups are saved both ways and updated via the _update_location function
+        self.match_ups = SortedDict({})
+        self.history = SortedDict({})       # TODO implement that
+
+        # Setup the grid
+        self.grid = np.zeros((grid_x, grid_y))
+        assert self.grid_x * self.grid_y >= num_players, "Too many players for the grid-size"
+
+        # Setup the payoff matrices
+        # Format
+        #       p2
+        #       D    C
+        # p1 D  P,P  T,S
+        #    C  S,T  R,R
+        #
+        #
+        self.p1_matrix = np.matrix([[P,T],[S,R]])
+        self.p2_matrix = np.matrix([[P,S],[T,R]])
+
+        # Get & Select the locations
+        loc_idcs = [ (i,j) for i in range(grid_x) for j in range(grid_y)]   # Equally performant as Cartesian product
+        select_locs = random.select(loc_idcs, num_players)
+        
+        self.players = []      
+
+        for idx, p_cfg in enumerate(players):
+            p_id = idx + 1  # We use this one-time offset to get player ids starting at 1. This allows to use 0 as an empty cell
+            player = Player(p_id, select_locs[idx], 0, p_cfg["play_window"], p_cfg["migrate_window"], 
+                             p_cfg["imit_prob"], p_cfg["migrate_prob"], 
+                             self, p_cfg["strategy"])
+
+            self.grid[select_locs[idx]] = p_id
+            self.players.append(Player)
+
+            self._update_location(True, select_locs[idx], p_id)
+
+        # Setup policies
+        self.migration_order_policy = lambda x: x   # Identity migration
+
+
+
+    def _update_location(self, take: int, loc, id: int = None):
+        """ Updates a location on the grid based on whether it is taken or not.
+            It automatically registers the location with the players in the region 
+            Runtime: O(log(n))
+        Args:
+            take (int): 0 if the location is now free, 1 in case the location is now taken
+            loc ([type]): 
+        """
+        if take:
+            assert self.grid[loc] == 0  
+            # We're new at this location, we have to 
+            # 1. Register ourselves with everyone around this location
+            x_l, x_h = max(0, loc[0]-self.play_window), min(self.grid_x, loc[0]+self.play_window)
+            y_l, y_h = max(0, loc[1]-self.play_window), min(self.grid_y, loc[1]+self.play_window)
+            for x in range(x_l, x_h+1):
+                for y in range(y_l, y_h+1):
+                    if (x,y) != loc and self.grid[x,y] != 0:
+                        # Found a match-up
+                        self.match_ups[self.grid[x,y]].append(id)
+                        self.match_ups[id].append(self.grid[x,y])
+
+            # 2. Update the grid state
+            self.grid[loc] = id
+        else:
+            assert self.grid[loc] == id
+            # We're leaving this location, we have to 
+            # 1. We remove ourselves from this location
+            x_l, x_h = max(0, loc[0]-self.play_window), min(self.grid_x, loc[0]+self.play_window)
+            y_l, y_h = max(0, loc[1]-self.play_window), min(self.grid_y, loc[1]+self.play_window)
+            for x in range(x_l, x_h+1):
+                for y in range(y_l, y_h+1):
+                    if (x,y) != loc and self.grid[x,y] != 0:
+                        # Found a match-up
+                        self.match_ups[self.grid[x,y]] = list(filter(lambda x: x != id, self.match_ups[self.grid[x,y]]))
+
+            self.match_ups[id] = [] # Can reset ourselves
+
+            # 2. Update the grid state
+            self.grid[self.players[id-1].loc] = 0
+
+    def simulate(self, epochs: int):
+        past_states = None  # For book-keeping
+        for i in range(epochs):
+            self.step()
+            # TODO Update bookkeeping here
+
+
+    def step():
+        """ Simulates a single epoch step by 
+            0. Reset players (wrt. to single step metrics)
+            1. Playing
+            2. Letting players communicate
+            3. Letting players imitate
+            4. Letting players migrate
+        """
+        # TODO Nothing to reset atm
+        self.play()
+        self.player_comm()
+        self.migrate()
+    
+    def global_update(self):
+        """ This function applies global behaviour to all players. It could i.e. be used to simulate the "harshness" of an environment
+        """
+        pass
+
+    def player_comm(self):
+        """ This function would allow players to communicate after a round.
+        """
+        pass
+
+    def migrate(self):
+        """ This function triggers the migration behaviour of the players 
+        """
+        ordered_players = self.migration_order_policy(self.players)
+
+        for p in ordered_players:
+            p.migrate()
+
+    def play(self):
+        """ Play all matchups and update the state accordingly
+        """
+        for k, v in self.match_ups.items():
+            for p2 in v:
+                if k < p2:  # We only need match-ups once and we're symmetric
+                    player_one = self.players[k-1]
+                    player_two = self.players[v-1]
+                    p1_dec  = player_one.make_move(self, player_one, player_two, self.history[k][v])
+                    p2_dec  = player_two.make_move(self, player_two, player_one, self.history[v][k])
+        
+                    p1_util = self.p1_matrix[p1_dec, p2_dec]
+                    p2_util = self.p2_matrix[p1_dec, p2_dec]
+
+                    # Update stats here
+
+                    # Update players
+                    player_one.latest_util = p1_util
+                    player_two.latest_util = p2_util
+
+                    player_one.total_util += p1_util
+                    player_two.total_util += p2_util
+
+                    # Update history
+                    # TODO
+
+    def sub_grid_play(self):
+        pass
+
+    def get_state(self):
+        pass
