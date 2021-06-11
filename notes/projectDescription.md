@@ -2,7 +2,7 @@
 
 Our group creates a similar simulation of the Imitation and Migration experiment as seen in the lecture.
 We take this experiment a step further and look at the conversions from repeated(infinite) prisoners dilemma, instead of only one time meetings. In the real would, people meet each other multiple times and decide if they cooperate or defect, according to some long term strategy.
-The goal is to let different strategies (like: Tit-for-Tat, Random, Always C, Always D, Tit-for-two-Tat, Joss, Grimm Trigger) battle for the superiority of the field. Just like in the lecture, to see if Tit-for-Tat would come out as the superior strategy when facing other competitors.
+The goal is to let different strategies (like: Tit-for-Tat, Random, Always C, Always D, Tit-for-two-Tat, Grimm Trigger) battle for the superiority of the field. Just like in the lecture, to see if Tit-for-Tat would come out as the superior strategy when facing other competitors.
 The simulation would be on a (interactive) website to play with the rewards, and punishments.
 
 ## Possible Ideas
@@ -26,7 +26,7 @@ The simulation would be on a (interactive) website to play with the rewards, and
 - Immer C
 - Friedman (Grimm Trigger)
 - TFT
-- Joss
+- TFTD
 - TF2T
 
 ## Themen für Theoriepart

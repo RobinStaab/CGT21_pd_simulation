@@ -38,13 +38,20 @@ same as $u(TFT, RAND_p)$ but with: S and T swaped
 
 $u(TFT, RAND_p) = \frac{p^2*\omega*(T+S-R-P)+p*(2\omega P + R(\omega-1)-2\omega T+T - \omega S)-\omega P+T(\omega-1)}{\omega-1}$
 
-##### vs. JOSS with param p for defection
+##### vs. TFTD
 
-TODO
+see TFT + SWAP:
+$u(TFTD, RAND_p) = \frac {\omega p^3 + \omega p^2(R - S - T - 1) + \omega  p T + p(S+1-p)}{1-\omega}$
 
 ##### vs. TF2T
 
-TODO
+$u_1 := u(RAND_p, TF2T) = p(R + \omega * u(RAND_p, TF2T))+(1-p)(T + \omega * u(RAND_p, TF2T_1))$
+$u_2 := u(RAND_p, TF2T_1) = p(R + \omega * u(RAND_p, TF2T))+(1-p)(T + \omega * u(RAND_p, TF2T_2))$
+$u_3 := u(RAND_p, TF2T_2) = p(S + \omega * u(RAND_p, TF2T))+(1-p)(P + \omega * u(RAND_p, TF2T_2))$
+
+$u_3 = \frac{pS+ωp*u_1+p-p^2}{1-ω+ωp}$
+$\implies u_2 = p(R + \omega * u_1)+(1-p)(T + \omega * \frac{pS+ωp*u_1+p-p^2}{1-ω+ωp}) = p\left(R+ωu_1\right)+\left(1-p\right)\left(T+\frac{ω\left(pS+ωpu_1+p-p^2\right)}{1-ω+ωp}\right)$
+$\implies u_1 = p(R + \omega * u_1)+(1-p)(T + \omega * (p\left(R+ωu_1\right)+\left(1-p\right)\left(T+\frac{ω\left(pS+ωpu_1+p-p^2\right)}{1-ω+ωp}\right))) = \frac{-ω^2p^4+3ω^2p^3+ω^2p^3T-ω^2p^3R+ω^2p^3S-3ω^2p^2-3ω^2p^2T+2ω^2p^2R-2ω^2p^2S+ω^2p+3ω^2pT-pT+pR-ω^2pR+ω^2pS+T-ω^2T}{-ω+1}$
 
 ## AD
 
@@ -71,9 +78,9 @@ $u(AD, GT) = T + \omega * u(AD, AD) = T + \frac \omega {1-\omega} P$
 same as GT:
 $u(AD, TFT) = T + \omega * u(AD, AD) = T + \frac \omega {1-\omega} P$
 
-##### vs. JOSS with param p for defection
+##### vs. TFTD
 
-$u(AD, JOSS_p) = p*T + (1-p)*P + \omega * u(AD, AD) = p*T + (1-p)*P + \frac \omega {1-\omega} P$
+$u(AD, TFTD) = P + \omega * u(AD, AD) = \frac 1 {1-\omega} P$
 
 ##### vs. TF2T
 
@@ -103,9 +110,9 @@ $u(AC, GT) = R + \omega R+ \omega^2R+... = \frac{1}{1-\omega} * R$
 
 $u(AC, TFT) = R + \omega R+ \omega^2R+... = \frac{1}{1-\omega} * R$
 
-##### vs. JOSS with param p for defection
+##### vs. TFTD
 
-$u(AC, JOSS_p) = (1-p) R + p * S + \omega u(AC, JOSS_p) = \frac {(1-p) R + p * S}{1-\omega}$
+$u(AC, TFTD) = S + \frac \omega {1-\omega} * R$
 
 ##### vs. TF2T
 
@@ -136,23 +143,20 @@ $u(GT, GT) = R + \omega R+ \omega^2R+... = \frac{1}{1-\omega} * R$
 
 $u(GT, AC) = R + \omega R+ \omega^2R+... = \frac{1}{1-\omega} * R$
 
-##### vs. JOSS with param p for defection
+##### vs. TFTD
 
-$u(GT, JOSS_p) = (1-p)(R + \omega * u(GT, JOSS_p)) + p * (S + \omega * u(AD, JOSS_p))$
-$u(GT, JOSS_p) = \frac {(1-p)*R + p * (S + \omega * (p*T + (1-p)*P + \frac \omega {1-\omega} P))}{1-(1-p)*\omega}$
+$u(GT, TFTD) = S + \omega * T + \frac {\omega^2} {1-\omega} * P$
 
 ##### vs. TF2T
 
-$u(GT, AC) = R + \omega R+ \omega^2R+... = \frac{1}{1-\omega} * R$
+$u(GT, AC) = R + \omega R + \omega^2R+... = \frac{1}{1-\omega} * R$
 
 ## TFT
 
 ##### vs. RANDOM with param p
 
-Lets denote: $TFT_D$ as the strategy of TFT, but it starts with defection instead of cooperation
-
-$u_1 := u(TFT, RAND_p) = p * (R + \omega * u(TFT, RAND_p)) + (1-p)*(S + \omega * u(TFT_D, RAND_p))$ with:
-$u_2 := u(TFT_D, RAND_p) = p * (T + \omega * u(TFT, RAND_p)) + (1-p)*(P + \omega * u(TFT_D, RAND_p))$
+$u_1 := u(TFT, RAND_p) = p * (R + \omega * u(TFT, RAND_p)) + (1-p)*(S + \omega * u(TFTD, RAND_p))$ with:
+$u_2 := u(TFTD, RAND_p) = p * (T + \omega * u(TFT, RAND_p)) + (1-p)*(P + \omega * u(TFTD, RAND_p))$
 
 $u_2 = p * (T + \omega * u_1) + (1-p)*(P + \omega * u_2)$
 $\Leftrightarrow u_2 = p * (T + \omega * u_1) + (1-p) * P + (1-p)* \omega * u_2$
@@ -161,11 +165,15 @@ $\Leftrightarrow u_2(1-(1-p)* \omega) = p _ (T + \omega _ u*1) + (1-p) * P$
 $\Leftrightarrow u_2 = \frac{p * (T + \omega * u_1) + (1-p) * P}{1-(1-p)* \omega} = \frac{p * (T + \omega * u_1) + (1-p) * P}{1-(1-p)* \omega}$
 
 $u_1 = p * (R + \omega * u_1) + (1-p)*(S + \omega * u_2)$
-$\Leftrightarrow u_1 = p * \omega * u_1 + p*T + (1-p)*(S + \omega * u_2)$
-$\Leftrightarrow u_1(1-p*\omega) = p*T + (1-p)*(S + \omega * u_2)$
-$\Leftrightarrow u_1 =\frac{ p*T + (1-p)*(S + \omega * u_2)}{1-p*\omega}$
+$\Leftrightarrow u_1 = p * \omega * u_1 + p*R + (1-p)*(S + \omega * u_2)$
+$\Leftrightarrow u_1(1-p*\omega) = p*R + (1-p)*(S + \omega * u_2)$
+$\Leftrightarrow u_1 =\frac{ p*R + (1-p)*(S + \omega * u_2)}{1-p*\omega}$
 
-$u(TFT, RAND_p) = \frac{ p*T + (1-p)*(S + \omega *\frac{p * (T + \omega * u(TFT, RAND_p) ) + (1-p) * P}{1-(1-p)* \omega})}{1-p*\omega} = \frac{p^2*\omega*(T+S-R-P)+p*(2\omega P + R(\omega-1)-2\omega S+S - \omega T)-\omega P+S(\omega-1)}{\omega-1}$
+$u_2 = \frac{p * (T + \omega * \frac{ p*R + (1-p)*(S + \omega * u_2)}{1-p*\omega}) + (1-p) * P}{1-(1-p)* \omega}$
+$u(TFTD, RAND_p) = \frac {\omega p^3 + \omega p^2(R - T - S - 1) + \omega  p S + p(T+1-p)}{1-\omega}$
+
+$u_1 = \frac{ p*R + (1-p)*(S + \omega * \frac{p * (T + \omega * u_1) + (1-p) * P}{1-(1-p)* \omega})}{1-p*\omega}$
+$u(TFT, RAND_p) = \frac {\omega p^3 + \omega p^2(R - T - S - 2) + \omega  p (1+T-R+2S)+p(R-S) + S - \omega S}{1-\omega}$
 
 ##### vs. AD
 
@@ -184,66 +192,52 @@ $u(TFT, GT) = R + \omega R+ \omega^2R+... = R * \sum_{i=0}^{\infin} \omega^i = \
 
 $u(TFT, TFT) = R + \omega R+ \omega^2R+... = R * \sum_{i=0}^{\infin} \omega^i = \frac 1{1-\omega}R$
 
-##### vs. JOSS with param p for defection
+##### vs. TFTD
 
-Lets denote: $JOSS_p^D$ as the strategy of $JOSS_p$, but it starts with defection instead of cooperation
-
-$u(TFT, JOSS_p) = (1-p)(R+\omega*u(TFT, JOSS_p)) + p(S + \omega*u(TFT_D, JOSS_p))$
-$u(TFT_D, JOSS_p) = (1-p)(T + \omega*u(TFT, JOSS_p^D)) + p(P + \omega*u(TFT_D, JOSS_p^D))$
-$u(TFT, JOSS_p^D) = S + \omega * u(TFT_D, JOSS_p)$
-$u(TFT_D, JOSS_p^D) = P + \omega * u(TFT_D, JOSS_p^D) = P + \omega P+ \omega^2P+... = \frac 1{1-\omega}*P$
-
-$u(TFT_D, JOSS_p) = (1-p)(T + \omega*u(TFT, JOSS_p^D)) + \frac p {1-\omega} * P$
-
-$u_1 = (1-p)(R+\omega*u_1) + p(S + \omega*u_2)$
-$u_2 = (1-p)(T + \omega*u_3) + \frac p {1-\omega} * P$
-$u_3 = S + \omega * u_2$
-
-$u(TFT_D, JOSS_p) = \frac{(\omega-1)(\omega S + T) - p (P+(\omega - 1)(\omega S + T))}{(\omega-1)((p-1)\omega^2 + 1)}$
-$u(TFT, JOSS_p) = \frac {(1-p)*R + p(S + \omega*\frac{(\omega-1)(\omega S + T) - p (P+(\omega - 1)(\omega S + T))}{(\omega-1)((p-1)\omega^2 + 1)})}{1-(1-p)*\omega}$
+$u(TFT, TFTD) = S + \omega  T + \omega^2  S + \omega^3  T +... = \sum_{i=0}^{\infin}\omega^{2i}S + \omega\sum_{i=0}^{\infin}\omega^{2i}T$
+$u(TFT, TFTD) = \frac 1 {1-\omega^2}S + \frac \omega {1-\omega^2}T$
 
 ##### vs. TF2T
 
 $u(TFT, TF2T) = R + \omega R+ \omega^2R+... = R * \sum_{i=0}^{\infin} \omega^i = \frac 1{1-\omega}R$
 
-## Joss
+## TFTD
 
 ##### vs. RANDOM with param p
 
-TODO
+See $u(TFT, RAND_p)$
+$u(TFTD, RAND_p) = \frac {\omega p^3 + \omega p^2(R - T - S - 1) + \omega  p S + p(T+1-p)}{1-\omega}$
 
 ##### vs. AD
 
-See AD
-$u(JOSS_p, AD) = p*S + (1-p)*P + \omega * u(AD, AD) = p*S + (1-p)*P + \frac \omega {1-\omega} P$
+$u(TFTD, AD) = u(AD, AD) = \frac 1 {1-\omega} * P$
 
 ##### vs. AC
 
-See AC
-$u(JOSS_p, AC) = (1-p) R + p * T + \omega u(JOSS_p, AC) = \frac {(1-p) R + p * T}{1-\omega}$
+$u(TFTD, AC) = T + \omega * u(AC, AC) = T + \frac {\omega}{1-\omega} * R$
 
 ##### vs. GT
 
-$u(JOSS_p, GT) = \frac {(1-p)*R + p * (T + \omega * (p*S + (1-p)*P + \frac \omega {1-\omega} P))}{1-(1-p)*\omega}$
+$u(TFTD, GT) = T + \omega * S + \omega^2 * u(AD, AD) = T + \omega S+ \frac {\omega^2}{1-\omega} * R$
 
 ##### vs. TFT
 
 see TFT:
-$u(JOSS_p, TFT) = \frac {(1-p)*R + p(T + \omega*\frac{(\omega-1)(\omega T + S) - p (P+(\omega - 1)(\omega T + S))}{(\omega-1)((p-1)\omega^2 + 1)})}{1-(1-p)*\omega}$
+$u(TFTD, TFT) = \frac 1 {1-\omega^2}T + \frac \omega {1-\omega^2}S$
 
-##### vs. JOSS with param p for defection
+##### vs. TFTD
 
-TODO
+$u(TFTD, TFTD) = u(AD, AD) = \frac{1}{1-\omega} * P$
 
 ##### vs. TF2T
 
-TODO
+$u(TFTD, TF2T) = T + \omega * u(AC, AC) = T + \frac \omega {1-\omega} * R$
 
 ## TF2T
 
 ##### vs. RANDOM with param p
 
-TODO
+$u(TF2T, RAND_p)=\frac{-ω^2p^4+3ω^2p^3+ω^2p^3S-ω^2p^3R+ω^2p^3T-3ω^2p^2-3ω^2p^2S+2ω^2p^2R-2ω^2p^2T+ω^2p+3ω^2pS-pS+pR-ω^2pR+ω^2pT+S-ω^2S}{-ω+1}$
 
 ##### vs. AD
 
@@ -251,20 +245,20 @@ $u(TF2T, AD) = S + \omega * S + \omega ^ 2 * u(AD, AD) = S + \omega S + \frac {\
 
 ##### vs. AC
 
-TODO
+$u(TF2T, AC) = S + \omega * S + \omega ^ 2 * u(AD, AD) = S + \omega S + \frac {\omega^2} {1-\omega} P$
 
 ##### vs. GT
 
-TODO
+$u(TF2T, GT) = R + \omega R+ \omega^2R+... = \frac{1}{1-\omega} * R$
 
 ##### vs. TFT
 
-TODO
+$u(TF2T, TFT) = R + \omega R+ \omega^2R+... = \frac{1}{1-\omega} * R$
 
-##### vs. JOSS with param p for defection
+##### vs. TFTD
 
-TODO
+$u(TF2T, TFTD) = S + \frac \omega {1-\omega} * R$
 
 ##### vs. TF2T
 
-TODO
+$u(TF2T, TF2T) = R + \omega R+ \omega^2R+... = \frac{1}{1-\omega} * R$
