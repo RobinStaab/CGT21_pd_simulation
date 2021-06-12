@@ -55,7 +55,7 @@ class Random(Strategy):
             coop_prob ([type]): Probability of cooperation
         """
         super().__init__()
-        self.name = "RANDOM"
+        self.name = "R"
         self.p = coop_prob
         
 
