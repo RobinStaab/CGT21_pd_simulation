@@ -1,6 +1,8 @@
 from typing import List
 from Strategies import *
 from random import random
+from History import History
+from Game_data import Game_data
 
 class Player:
 
@@ -31,6 +33,7 @@ class Player:
         self.sim_state      = sim_state
         self.strategy       = strategy
         self.alive          = True
+        self.history        = History()
         
         # How much utility we gained last round 
         self.latest_util = 0
@@ -90,13 +93,24 @@ class Player:
                 self.sim_state._update_location(True, best_loc, self.id)
                 self.loc = best_loc
 
-    def make_move(self, player_two, game_config: Dict,  history) -> Tuple[int, float]:
-        return self.strategy.make_move(self, player_two, game_config, history)
+    def make_move(self, player_two, game_config: Dict) -> Tuple[int, float]:
+        return self.strategy.make_move(self, player_two, game_config, self.history)
 
-    def iterated_move(self, player_two, game_config: Dict,  history) -> Tuple[int, float]:
-        return self.strategy.iterated_move(self, player_two, game_config, history)
+    def iterated_move(self, player_two, game_config: Dict) -> Tuple[int, float]:
+        return self.strategy.iterated_move(self, player_two, game_config, self.history)
 
     def _reset(self):
         """In case we want to reset something for a single player, we can do it here
         """
         self.latest_util = 0
+
+    def add_to_history(self, epoch, other_id, other_util, data_dict):
+        """Player adds game to history
+        
+            Args:
+            epoch (int)         : epoch of the game
+            other_id (int)      : id of the opponent
+            other_util (float)  : utility of the opponent
+            data_dict           : additional data dictionary
+        """
+        self.history.add_game(Game_data(epoch, self.id, other_id, self.latest_util, other_util, data_dict))

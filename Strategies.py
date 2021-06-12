@@ -74,6 +74,32 @@ class Random(Strategy):
     def __str__(self) -> str:
         return f"{self.name} p: {self.p}"
 
+
+class Cooperate(Strategy):
+
+    def __init__(self, coop_prob) -> None:
+        """Simple Random-Strategy 
+
+        Args:
+            coop_prob ([type]): Probability of cooperation
+        """
+        super().__init__()
+        self.name = "COOPERATE"
+
+        
+
+    def make_move(self, player_one, player_two, game_config: Dict, history) -> int:
+        return 0, 0
+
+
+    def iterated_move(self, player_one, player_two, game_config: Dict, history) -> Tuple[int, float]:
+        raise NotImplementedError
+        return super().iterated_move(player_one, player_two, game_config, history)
+
+
+    def __str__(self) -> str:
+        return f"{self.name} p: {self.p}"
+
 class TFT(Strategy):
 
     def __init__(self) -> None:
