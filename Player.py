@@ -75,7 +75,7 @@ class Player:
             best_loc    = self.loc
             best_util   = self.latest_util
             # NOTE This could be updated on fly - by is constant time overhead
-            migrate_neighbourhood = [(x % self.sim_state.grid_x, y % self.sim_state.grid_y) for x in range(x_l, x_h+1) for y in range(y_l, y_h+1) if self.sym_state.grid[(x % self.sim_state.grid_x, y % self.sim_state.grid_y)] == 0]
+            migrate_neighbourhood = [(x % self.sim_state.grid_x, y % self.sim_state.grid_y) for x in range(x_l, x_h+1) for y in range(y_l, y_h+1) if self.sim_state.grid[(x % self.sim_state.grid_x, y % self.sim_state.grid_y)] == 0]
             for f_loc in migrate_neighbourhood:
                 # How high would our payoff be here
                 new_util = self.sim_state.sub_grid_play(self, f_loc)
@@ -86,9 +86,9 @@ class Player:
             # Actual migration
             if self.loc != best_loc:
                 # NOTE Important to keep this order as otherwise matchups will be lost
-                self.sim_state._update_location(False, self.loc)
-                self.sim_state._update_location(True, f_loc, self.id)
-                self.loc = f_loc
+                self.sim_state._update_location(False, self.loc, self.id)
+                self.sim_state._update_location(True, best_loc, self.id)
+                self.loc = best_loc
 
     def make_move(self, player_two, game_config: Dict,  history) -> Tuple[int, float]:
         return self.strategy.make_move(self, player_two, game_config, history)
@@ -99,3 +99,4 @@ class Player:
     def _reset(self):
         """In case we want to reset something for a single player, we can do it here
         """
+        self.latest_util = 0

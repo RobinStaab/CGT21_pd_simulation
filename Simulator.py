@@ -1,5 +1,6 @@
 from random import seed, random, sample
 from typing import Dict, List, Tuple
+from tqdm import tqdm, trange
 
 import numpy as np
 from Player import Player
@@ -127,14 +128,15 @@ class Simulator:
 
     def simulate(self, epochs: int, visualize: bool = False):
         past_states = None  # For book-keeping
-        for i in range(epochs):
+        t = tqdm(range(epochs), position=0, leave=True)
+        for i in t:
             self.step(i)
 
             # TODO Update bookkeeping here
 
             if visualize:
-                print(f"===== Epoch: {i} =====")
-                print(self.grid)
+                tqdm.write(str(self.grid)+"\n")
+                #t.set_description(str(self.grid)+"\n", refresh=True)
 
 
     def step(self, epoch: int):
@@ -146,10 +148,11 @@ class Simulator:
             4. Letting players migrate
         """
         # TODO Nothing to reset atm
+        self.reset(epoch)
         self.play(epoch)
         self.player_comm()
         self.imitate(epoch)
-        self.migrate(epoch)
+        #self.migrate(epoch)
     
     def global_update(self):
         """ This function applies global behaviour to all players. It could i.e. be used to simulate the "harshness" of an environment
@@ -198,8 +201,8 @@ class Simulator:
                         p2_util = self.p2_matrix[p1_dec, p2_dec]
 
                     # Update players
-                    player_one.latest_util = p1_util
-                    player_two.latest_util = p2_util
+                    player_one.latest_util += p1_util
+                    player_two.latest_util += p2_util
 
                     player_one.total_util += p1_util
                     player_two.total_util += p2_util
@@ -207,7 +210,8 @@ class Simulator:
                     games_played += 1
                     # Update history
                     # TODO
-        print(f"Total games: {games_played}")
+        
+        #print(f"Total games: {games_played}")
 
     def sub_grid_play(self, p:Player, loc: Tuple[int,int]) -> float:
         """ Returns the outcome if the player p would play at position location now
@@ -223,7 +227,7 @@ class Simulator:
         # New Grid
         if self.wrap:
             x_l, x_h = loc[0]-self.play_window, loc[0]+self.play_window
-            y_l, y_h = loc[1]-self.play_window, self.grid_y, loc[1]+self.play_window
+            y_l, y_h = loc[1]-self.play_window, loc[1]+self.play_window
         else:
             x_l, x_h = max(0, loc[0]-self.play_window), min(self.grid_x, loc[0]+self.play_window)
             y_l, y_h = max(0, loc[1]-self.play_window), min(self.grid_y, loc[1]+self.play_window)
@@ -234,20 +238,24 @@ class Simulator:
                     x_mod, y_mod = x % self.grid_x, y % self.grid_y
 
                     if (x_mod, y_mod) != loc and self.grid[x_mod, y_mod] != 0:
-                        neighs.append(self.players[self.grid[x_mod, y_mod]-1])
+                        neighs.append(self.players[int(self.grid[x_mod, y_mod])-1])
 
         util = 0.0
         for neigh in neighs:
             if self.use_iterated_policy:  # We used an iterated policy which directly returns the values
-                p1_dec, p1_util  = player_one.iterated_move(self, player_one, neigh, self.values, self.history)
+                p1_dec, p1_util  = player_one.iterated_move(neigh, self.values, self.history)
             else: # We used a step policy and can look_up the values from the matrix
-                p1_dec, _  = player_one.make_move(self, player_one, neigh, {}, self.history)
-                p2_dec, _  = neigh.make_move(self, neigh, player_one, {}, self.history)
+                p1_dec, _  = player_one.make_move(neigh, self.values, self.history)
+                p2_dec, _  = neigh.make_move(player_one, self.values, self.history)
                 p1_util = self.p1_matrix[p1_dec, p2_dec]
             # Don't append to history
             util += p1_util
 
         return util
+
+    def reset(self, epoch: int):
+        for p in self.players:
+            p._reset()
 
     def get_state(self) -> Dict:
         raise NotImplementedError
