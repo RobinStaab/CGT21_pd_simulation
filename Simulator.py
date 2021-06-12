@@ -152,7 +152,7 @@ class Simulator:
         self.play(epoch)
         self.player_comm()
         self.imitate(epoch)
-        #self.migrate(epoch)
+        self.migrate(epoch)
     
     def global_update(self):
         """ This function applies global behaviour to all players. It could i.e. be used to simulate the "harshness" of an environment
