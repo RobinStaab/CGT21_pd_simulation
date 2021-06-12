@@ -43,7 +43,6 @@ class Simulator:
         # We save the match-ups in a dict per player - This allows access in O(log(n)), and more importantly migration in O(log(n))
         # Match-ups are saved both ways and updated via the _update_location function
         self.match_ups = SortedDict({})
-        self.history = SortedDict({})       # TODO implement that
 
         # Setup the grid
         self.grid = np.zeros((grid_x, grid_y))
@@ -192,11 +191,11 @@ class Simulator:
                     player_two = self.players[p2-1]
 
                     if self.use_iterated_policy:  # We used an iterated policy which directly returns the values
-                        p1_dec, p1_util  = player_one.iterated_move(player_two, self.values, self.history)
-                        p2_dec, p1_util  = player_two.iterated_move(player_one, self.values, self.history)
+                        p1_dec, p1_util  = player_one.iterated_move(player_two, self.values)
+                        p2_dec, p1_util  = player_two.iterated_move(player_one, self.values)
                     else: # We used a step policy and can look_up the values from the matrix
-                        p1_dec, _  = player_one.make_move(player_two, {}, self.history)
-                        p2_dec, _  = player_two.make_move(player_one, {}, self.history)
+                        p1_dec, _  = player_one.make_move(player_two, {})
+                        p2_dec, _  = player_two.make_move(player_one, {})
                         p1_util = self.p1_matrix[p1_dec, p2_dec]
                         p2_util = self.p2_matrix[p1_dec, p2_dec]
 
@@ -208,8 +207,11 @@ class Simulator:
                     player_two.total_util += p2_util
 
                     games_played += 1
-                    # Update history
-                    # TODO
+
+                    #add to histories
+                    player_one.add_to_history(epoch, player_two.id, player_two.latest_util, {})
+                    player_two.add_to_history(epoch, player_one.id, player_one.latest_util, {})
+
         
         #print(f"Total games: {games_played}")
 
@@ -243,10 +245,10 @@ class Simulator:
         util = 0.0
         for neigh in neighs:
             if self.use_iterated_policy:  # We used an iterated policy which directly returns the values
-                p1_dec, p1_util  = player_one.iterated_move(neigh, self.values, self.history)
+                p1_dec, p1_util  = player_one.iterated_move(neigh, self.values)
             else: # We used a step policy and can look_up the values from the matrix
-                p1_dec, _  = player_one.make_move(neigh, self.values, self.history)
-                p2_dec, _  = neigh.make_move(player_one, self.values, self.history)
+                p1_dec, _  = player_one.make_move(neigh, self.values)
+                p2_dec, _  = neigh.make_move(player_one, self.values)
                 p1_util = self.p1_matrix[p1_dec, p2_dec]
             # Don't append to history
             util += p1_util
