@@ -1,4 +1,6 @@
-from random import seed, random
+from random import seed, random, sample
+from typing import Dict, List, Tuple
+
 import numpy as np
 from Player import Player
 from sortedcontainers import SortedDict
@@ -33,6 +35,9 @@ class Simulator:
         self.num_players = num_players
         self.play_window = play_window
         self.travel_window = travel_window
+        self.values = {'T': T, 'R': R, 'S': S, 'P': P}
+        self.wrap = True
+        self.use_iterated_policy = False
         
         # We save the match-ups in a dict per player - This allows access in O(log(n)), and more importantly migration in O(log(n))
         # Match-ups are saved both ways and updated via the _update_location function
@@ -56,7 +61,7 @@ class Simulator:
 
         # Get & Select the locations
         loc_idcs = [ (i,j) for i in range(grid_x) for j in range(grid_y)]   # Equally performant as Cartesian product
-        select_locs = random.select(loc_idcs, num_players)
+        select_locs = sample(loc_idcs, num_players)
         
         self.players = []      
 
@@ -66,15 +71,12 @@ class Simulator:
                              p_cfg["imit_prob"], p_cfg["migrate_prob"], 
                              self, p_cfg["strategy"])
 
-            self.grid[select_locs[idx]] = p_id
-            self.players.append(Player)
-
+            self.match_ups[p_id] = []
             self._update_location(True, select_locs[idx], p_id)
+            self.players.append(player)
 
         # Setup policies
         self.migration_order_policy = lambda x: x   # Identity migration
-
-
 
     def _update_location(self, take: int, loc, id: int = None):
         """ Updates a location on the grid based on whether it is taken or not.
@@ -84,18 +86,26 @@ class Simulator:
             take (int): 0 if the location is now free, 1 in case the location is now taken
             loc ([type]): 
         """
+
+        if self.wrap:
+            x_l, x_h = loc[0]-self.play_window, loc[0]+self.play_window
+            y_l, y_h = loc[1]-self.play_window, loc[1]+self.play_window
+        else:
+            x_l, x_h = max(0, loc[0]-self.play_window), min(self.grid_x, loc[0]+self.play_window)
+            y_l, y_h = max(0, loc[1]-self.play_window), min(self.grid_y, loc[1]+self.play_window)
+
         if take:
             assert self.grid[loc] == 0  
             # We're new at this location, we have to 
             # 1. Register ourselves with everyone around this location
-            x_l, x_h = max(0, loc[0]-self.play_window), min(self.grid_x, loc[0]+self.play_window)
-            y_l, y_h = max(0, loc[1]-self.play_window), min(self.grid_y, loc[1]+self.play_window)
             for x in range(x_l, x_h+1):
                 for y in range(y_l, y_h+1):
-                    if (x,y) != loc and self.grid[x,y] != 0:
+                    x_mod, y_mod = x % self.grid_x, y % self.grid_y
+
+                    if (x_mod,y_mod) != loc and self.grid[x_mod,y_mod] != 0:
                         # Found a match-up
-                        self.match_ups[self.grid[x,y]].append(id)
-                        self.match_ups[id].append(self.grid[x,y])
+                        self.match_ups[int(self.grid[x_mod,y_mod])].append(id)
+                        self.match_ups[id].append(int(self.grid[x_mod,y_mod]))
 
             # 2. Update the grid state
             self.grid[loc] = id
@@ -103,27 +113,31 @@ class Simulator:
             assert self.grid[loc] == id
             # We're leaving this location, we have to 
             # 1. We remove ourselves from this location
-            x_l, x_h = max(0, loc[0]-self.play_window), min(self.grid_x, loc[0]+self.play_window)
-            y_l, y_h = max(0, loc[1]-self.play_window), min(self.grid_y, loc[1]+self.play_window)
             for x in range(x_l, x_h+1):
                 for y in range(y_l, y_h+1):
-                    if (x,y) != loc and self.grid[x,y] != 0:
+                    x_mod, y_mod = x % self.grid_x, y % self.grid_y
+                    if (x_mod,y_mod) != loc and self.grid[x_mod,y_mod] != 0:
                         # Found a match-up
-                        self.match_ups[self.grid[x,y]] = list(filter(lambda x: x != id, self.match_ups[self.grid[x,y]]))
+                        self.match_ups[int(self.grid[x_mod,y_mod])] = list(filter(lambda x: x != id, self.match_ups[int(self.grid[x_mod,y_mod])]))
 
             self.match_ups[id] = [] # Can reset ourselves
 
             # 2. Update the grid state
             self.grid[self.players[id-1].loc] = 0
 
-    def simulate(self, epochs: int):
+    def simulate(self, epochs: int, visualize: bool = False):
         past_states = None  # For book-keeping
         for i in range(epochs):
-            self.step()
+            self.step(i)
+
             # TODO Update bookkeeping here
 
+            if visualize:
+                print(f"===== Epoch: {i} =====")
+                print(self.grid)
 
-    def step():
+
+    def step(self, epoch: int):
         """ Simulates a single epoch step by 
             0. Reset players (wrt. to single step metrics)
             1. Playing
@@ -132,9 +146,10 @@ class Simulator:
             4. Letting players migrate
         """
         # TODO Nothing to reset atm
-        self.play()
+        self.play(epoch)
         self.player_comm()
-        self.migrate()
+        self.imitate(epoch)
+        self.migrate(epoch)
     
     def global_update(self):
         """ This function applies global behaviour to all players. It could i.e. be used to simulate the "harshness" of an environment
@@ -146,7 +161,7 @@ class Simulator:
         """
         pass
 
-    def migrate(self):
+    def migrate(self, epoch: int):
         """ This function triggers the migration behaviour of the players 
         """
         ordered_players = self.migration_order_policy(self.players)
@@ -154,21 +169,33 @@ class Simulator:
         for p in ordered_players:
             p.migrate()
 
-    def play(self):
+    def imitate(self, epoch: int):
+        """ This function triggers the imitation behaviour of the players 
+        """
+        # ordered_players = self.migration_order_policy(self.players)
+
+        # for p in ordered_players:
+        #     p.migrate()
+        pass
+
+    def play(self, epoch):
         """ Play all matchups and update the state accordingly
         """
+        games_played = 0
         for k, v in self.match_ups.items():
             for p2 in v:
                 if k < p2:  # We only need match-ups once and we're symmetric
                     player_one = self.players[k-1]
-                    player_two = self.players[v-1]
-                    p1_dec  = player_one.make_move(self, player_one, player_two, self.history[k][v])
-                    p2_dec  = player_two.make_move(self, player_two, player_one, self.history[v][k])
-        
-                    p1_util = self.p1_matrix[p1_dec, p2_dec]
-                    p2_util = self.p2_matrix[p1_dec, p2_dec]
+                    player_two = self.players[p2-1]
 
-                    # Update stats here
+                    if self.use_iterated_policy:  # We used an iterated policy which directly returns the values
+                        p1_dec, p1_util  = player_one.iterated_move(player_two, self.values, self.history)
+                        p2_dec, p1_util  = player_two.iterated_move(player_one, self.values, self.history)
+                    else: # We used a step policy and can look_up the values from the matrix
+                        p1_dec, _  = player_one.make_move(player_two, {}, self.history)
+                        p2_dec, _  = player_two.make_move(player_one, {}, self.history)
+                        p1_util = self.p1_matrix[p1_dec, p2_dec]
+                        p2_util = self.p2_matrix[p1_dec, p2_dec]
 
                     # Update players
                     player_one.latest_util = p1_util
@@ -177,11 +204,51 @@ class Simulator:
                     player_one.total_util += p1_util
                     player_two.total_util += p2_util
 
+                    games_played += 1
                     # Update history
                     # TODO
+        print(f"Total games: {games_played}")
 
-    def sub_grid_play(self):
-        pass
+    def sub_grid_play(self, p:Player, loc: Tuple[int,int]) -> float:
+        """ Returns the outcome if the player p would play at position location now
 
-    def get_state(self):
+        Args:
+            new_loc (Tuple[int, int]): Location to play from 
+
+        Returns:
+            float: utility at this location
+        """
+        player_one = p
+
+        # New Grid
+        if self.wrap:
+            x_l, x_h = loc[0]-self.play_window, loc[0]+self.play_window
+            y_l, y_h = loc[1]-self.play_window, self.grid_y, loc[1]+self.play_window
+        else:
+            x_l, x_h = max(0, loc[0]-self.play_window), min(self.grid_x, loc[0]+self.play_window)
+            y_l, y_h = max(0, loc[1]-self.play_window), min(self.grid_y, loc[1]+self.play_window)
+        # New neighbours
+        neighs: List[Player] = []
+        for x in range(x_l, x_h+1):
+                for y in range(y_l, y_h+1):
+                    x_mod, y_mod = x % self.grid_x, y % self.grid_y
+
+                    if (x_mod, y_mod) != loc and self.grid[x_mod, y_mod] != 0:
+                        neighs.append(self.players[self.grid[x_mod, y_mod]-1])
+
+        util = 0.0
+        for neigh in neighs:
+            if self.use_iterated_policy:  # We used an iterated policy which directly returns the values
+                p1_dec, p1_util  = player_one.iterated_move(self, player_one, neigh, self.values, self.history)
+            else: # We used a step policy and can look_up the values from the matrix
+                p1_dec, _  = player_one.make_move(self, player_one, neigh, {}, self.history)
+                p2_dec, _  = neigh.make_move(self, neigh, player_one, {}, self.history)
+                p1_util = self.p1_matrix[p1_dec, p2_dec]
+            # Don't append to history
+            util += p1_util
+
+        return util
+
+    def get_state(self) -> Dict:
+        raise NotImplementedError
         pass

@@ -1,6 +1,5 @@
 from typing import List
 from Strategies import *
-from Simulator import Simulator
 from random import random
 
 class Player:
@@ -8,7 +7,7 @@ class Player:
     def __init__(self, id: int, loc, init_util: float, 
                     play_window: int, migrate_window: int, 
                     imit_prob: float, migrate_prob: float,
-                    sim_state: Simulator, strategy: Strategy) -> None:
+                    sim_state, strategy: Strategy) -> None:
         """Base player model
 
         Args:
@@ -22,16 +21,16 @@ class Player:
             sim_state: (Simulator): Reference to the Simulator to get access to other players
             strategy (Strategy): Strategy that this player follows
         """
-        self.id = id
-        self.loc = loc
-        self.init_util = init_util
-        self.play_window = play_window
+        self.id     = id
+        self.loc    = loc
+        self.total_util     = init_util
+        self.play_window    = play_window
         self.migrate_window = migrate_window
-        self.imit_prob = imit_prob
-        self.migrate_prob = migrate_prob
-        self.sim_state = sim_state
-        self.strategy = strategy
-        self.alive = True
+        self.imit_prob      = imit_prob
+        self.migrate_prob   = migrate_prob
+        self.sim_state      = sim_state
+        self.strategy       = strategy
+        self.alive          = True
         
         # How much utility we gained last round 
         self.latest_util = 0
@@ -50,7 +49,7 @@ class Player:
             # We imitate the most succesfull player in the neighbourhood
             new_strategy = self.strategy
             best_util = self.latest_util
-            for n_id in self.play_neighbourhood:
+            for n_id in self.play_neighbourhood:    # TODO
                 if self.sim_state.players[id].latest_util > best_util:
                     best_util = self.sim_state.players[id].latest_util
                     new_strategy = self.sim_state.players[id].strategy
@@ -64,9 +63,20 @@ class Player:
         r = random()
         if r < self.migrate_prob:
             # We migrate if we find a better spot
+
+            if self.sim_state.wrap:
+                x_l, x_h = self.loc[0]-self.play_window, self.loc[0]+self.play_window
+                y_l, y_h = self.loc[1]-self.play_window, self.loc[1]+self.play_window
+            else:
+                x_l, x_h = max(0, self.loc[0]-self.play_window), min(self.grid_x, self.loc[0]+self.play_window)
+                y_l, y_h = max(0, self.loc[1]-self.play_window), min(self.grid_y, self.loc[1]+self.play_window)
+
+
             best_loc    = self.loc
             best_util   = self.latest_util
-            for f_loc in self.migrate_neighbourhood:
+            # NOTE This could be updated on fly - by is constant time overhead
+            migrate_neighbourhood = [(x % self.sim_state.grid_x, y % self.sim_state.grid_y) for x in range(x_l, x_h+1) for y in range(y_l, y_h+1) if self.sym_state.grid[(x % self.sim_state.grid_x, y % self.sim_state.grid_y)] == 0]
+            for f_loc in migrate_neighbourhood:
                 # How high would our payoff be here
                 new_util = self.sim_state.sub_grid_play(self, f_loc)
                 if new_util > best_util:
@@ -79,6 +89,12 @@ class Player:
                 self.sim_state._update_location(False, self.loc)
                 self.sim_state._update_location(True, f_loc, self.id)
                 self.loc = f_loc
+
+    def make_move(self, player_two, game_config: Dict,  history) -> Tuple[int, float]:
+        return self.strategy.make_move(self, player_two, game_config, history)
+
+    def iterated_move(self, player_two, game_config: Dict,  history) -> Tuple[int, float]:
+        return self.strategy.iterated_move(self, player_two, game_config, history)
 
     def _reset(self):
         """In case we want to reset something for a single player, we can do it here
