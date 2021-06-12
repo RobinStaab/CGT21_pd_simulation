@@ -24,8 +24,8 @@ server = app.server
 
 
 Strategies = {'TFT': 1, 'TF2T': 2, 'TFTD': 3, 'AC': 4, 'AD': 5, 'GT': 6, 'R': 7}
-
 fig = go.Figure()
+colorscales = px.colors.named_colorscales()
 
 app.layout = html.Div(children=[
     html.H1(children='INSERT TITLE Controversies in Game Theory 2021 - Prisoners Dilemma'),
@@ -136,6 +136,12 @@ app.layout = html.Div(children=[
                 )], style={'width': '49%', 'display': 'inline-block'}),
 
                 html.Button('Start', id='start', n_clicks=0),
+                dcc.Dropdown(
+                    id='colorscale',
+                    options=[{"value": x, "label": x}
+                    for x in colorscales],
+                    value='viridis'
+                ),
                 dcc.Graph(id='play-graph', figure=fig),
                 html.Div(id='results-1', children='Summary will be displayed here', style={'width': '49%', 'display': 'inline-block'}),
             ]),
@@ -145,13 +151,14 @@ app.layout = html.Div(children=[
 
 @app.callback(
     Output('play-graph', 'figure'),
-    Input('start', 'n_clicks'),
+    [Input('start', 'n_clicks'),
+     Input("colorscale", 'value'),],
     [State("slider-T", 'value'),
      State("slider-R", 'value'),
      State("slider-P", 'value'),
      State("slider-S", 'value'),
      State({'role': 'strategy_slider', 'index': ALL}, 'value')], prevent_initial_call=True)
-def update_figure(clicks, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S: int = 1, *args: tuple):
+def update_figure(clicks, colorscale, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S: int = 1, *args: tuple):
 
     inputs = [val_T, val_R, val_P, val_S] + list(args[0])       # This excludes any inputs not regulated through sliders but we can change this later if needed
 
@@ -166,18 +173,12 @@ def update_figure(clicks, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S:
     migrate_window = 3
     imit_prob = 0.8
     migrate_prob = 0.8
-    epochs = 1000
+    epochs = 100
 
-    # hahaha this will never be this simple
     player_cfgs = generate_players("random", num_players, play_window, migrate_window, imit_prob, migrate_prob)
     # player_cfgs = generate_players("random", num_players, play_window, migrate_window, imit_prob, migrate_prob)
     sim = Simulator(grid_x, grid_y, num_players, play_window, migrate_window, player_cfgs, val_T, val_R, val_S, val_P   )
 
-
-    # sim.grid id id-1 is player.strategy
-
-    x = []
-    y = []
     strat = []
     strategies = []
     for i in range(0, grid_x):
@@ -189,8 +190,7 @@ def update_figure(clicks, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S:
         strategies.append(strat)
         strat = []
     # round()
-    fig = px.imshow(strategies, x=list(range(0,50)), y=list(range(0,50)), color_continuous_scale='RdBu_r')
-    fig.update_layout(transition_duration=500)
+    fig = px.imshow(strategies, x=list(range(0,50)), y=list(range(0,50)), color_continuous_scale=colorscale)
     return fig
 
 
