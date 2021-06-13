@@ -39,6 +39,7 @@ class Simulator:
         self.values = {'T': T, 'R': R, 'S': S, 'P': P}
         self.wrap = True
         self.use_iterated_policy = False
+        self.total_epoch = 0
         
         # We save the match-ups in a dict per player - This allows access in O(log(n)), and more importantly migration in O(log(n))
         # Match-ups are saved both ways and updated via the _update_location function
@@ -77,6 +78,8 @@ class Simulator:
 
         # Setup policies
         self.migration_order_policy = lambda x: x   # Identity migration
+
+        print("Created Simulator")
 
     def _update_location(self, take: int, loc, id: int = None):
         """ Updates a location on the grid based on whether it is taken or not.
@@ -127,10 +130,11 @@ class Simulator:
 
     def simulate(self, epochs: int, visualize: bool = False):
         past_states = None  # For book-keeping
-        t = tqdm(range(epochs), position=0, leave=True)
+        #t = tqdm(range(epochs), position=0, leave=True)
+        t = range(epochs)
         for i in t:
-            self.step(i)
-
+            self.step(self.total_epoch)
+            self.total_epoch += 1
             # TODO Update bookkeeping here
 
             if visualize:
@@ -199,6 +203,7 @@ class Simulator:
                         p1_util = self.p1_matrix[p1_dec, p2_dec]
                         p2_util = self.p2_matrix[p1_dec, p2_dec]
 
+                    #print(p1_util)
                     # Update players
                     player_one.latest_util += p1_util
                     player_two.latest_util += p2_util
