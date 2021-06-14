@@ -35,21 +35,24 @@ if __name__ == "__main__":
     R = 1
     S = 0.5
     P = 0.8
-    grid_x          = 50
-    grid_y          = 50
-    num_players     = 2400
+    grid_x          = 20
+    grid_y          = 20
+    num_players     = 300
     play_window     = 1
     migrate_window  = 3
     imit_prob       = 0.8
     migrate_prob    = 0.8
-    epochs          = 1000
+    epochs          = 100
     omega          = 0.5
     
     player_cfgs = generate_players("random", num_players, play_window, migrate_window, imit_prob, migrate_prob, omega)
 
     sim = Simulator(grid_x, grid_y, num_players, play_window, migrate_window, player_cfgs, T, R, S, P)
 
-    start_time = time.time()
-    sim.simulate(epochs, visualize=False)
-    
+   
+    for i in range(10):
+        start_time = time.time()
+        sim.simulate(epochs, visualize=False)
+        print(f"Time: {(time.time() - start_time)}")
+
     print(f"Total Time for {epochs} epochs, {num_players} players and grid-size {grid_x} x {grid_y}: {(time.time() - start_time)}")
