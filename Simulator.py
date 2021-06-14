@@ -69,7 +69,7 @@ class Simulator:
             p_id = idx + 1  # We use this one-time offset to get player ids starting at 1. This allows to use 0 as an empty cell
             player = Player(p_id, select_locs[idx], 0, p_cfg["play_window"], p_cfg["migrate_window"], 
                              p_cfg["imit_prob"], p_cfg["migrate_prob"], 
-                             self, p_cfg["strategy"])
+                             self, p_cfg["strategy"], p_cfg["omega"])
 
             self.match_ups[p_id] = []
             self._update_location(True, select_locs[idx], p_id)
@@ -191,11 +191,11 @@ class Simulator:
                     player_two = self.players[p2-1]
 
                     if self.use_iterated_policy:  # We used an iterated policy which directly returns the values
-                        p1_dec, p1_util  = player_one.iterated_move(player_two, self.values)
-                        p2_dec, p1_util  = player_two.iterated_move(player_one, self.values)
+                        p1_dec, p1_util  = player_one.make_move(player_two, self.values)
+                        p2_dec, p1_util  = player_two.make_move(player_one, self.values)
                     else: # We used a step policy and can look_up the values from the matrix
-                        p1_dec, _  = player_one.make_move(player_two, {})
-                        p2_dec, _  = player_two.make_move(player_one, {})
+                        p1_dec, _  = player_one.make_move(player_two, self.values)
+                        p2_dec, _  = player_two.make_move(player_one, self.values)
                         p1_util = self.p1_matrix[p1_dec, p2_dec]
                         p2_util = self.p2_matrix[p1_dec, p2_dec]
 
@@ -209,8 +209,8 @@ class Simulator:
                     games_played += 1
 
                     #add to histories
-                    player_one.add_to_history(epoch, player_two.id, player_two.latest_util, {})
-                    player_two.add_to_history(epoch, player_one.id, player_one.latest_util, {})
+                    player_one.add_to_history(epoch, player_two.id, p1_dec, p2_dec, player_two.latest_util, {})
+                    player_two.add_to_history(epoch, player_one.id, p2_dec, p1_dec, player_one.latest_util, {})
 
         
         #print(f"Total games: {games_played}")
@@ -245,7 +245,7 @@ class Simulator:
         util = 0.0
         for neigh in neighs:
             if self.use_iterated_policy:  # We used an iterated policy which directly returns the values
-                p1_dec, p1_util  = player_one.iterated_move(neigh, self.values)
+                p1_dec, p1_util  = player_one.make_move(neigh, self.values)
             else: # We used a step policy and can look_up the values from the matrix
                 p1_dec, _  = player_one.make_move(neigh, self.values)
                 p2_dec, _  = neigh.make_move(player_one, self.values)

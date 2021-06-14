@@ -4,7 +4,7 @@ from Strategies import *
 import time
 
 
-def generate_players(strategy: str, amount: int, play_window: int, migrate_window: int, imit_prob: float, migrate_prob: float):
+def generate_players(strategy: str, amount: int, play_window: int, migrate_window: int, imit_prob: float, migrate_prob: float, omega: float):
     
     strategy_obj = None
     if strategy == "random":
@@ -22,7 +22,8 @@ def generate_players(strategy: str, amount: int, play_window: int, migrate_windo
             "migrate_window": migrate_window,
             "imit_prob": imit_prob,
             "migrate_prob": migrate_prob,
-            "strategy": strategy_obj
+            "strategy": strategy_obj,
+            "omega": omega
         })
 
     return player_cfgs
@@ -42,8 +43,9 @@ if __name__ == "__main__":
     imit_prob       = 0.8
     migrate_prob    = 0.8
     epochs          = 1000
+    omega          = 0.5
     
-    player_cfgs = generate_players("random", num_players, play_window, migrate_window, imit_prob, migrate_prob)
+    player_cfgs = generate_players("random", num_players, play_window, migrate_window, imit_prob, migrate_prob, omega)
 
     sim = Simulator(grid_x, grid_y, num_players, play_window, migrate_window, player_cfgs, T, R, S, P)
 

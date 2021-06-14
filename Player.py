@@ -9,7 +9,7 @@ class Player:
     def __init__(self, id: int, loc, init_util: float, 
                     play_window: int, migrate_window: int, 
                     imit_prob: float, migrate_prob: float,
-                    sim_state, strategy: Strategy) -> None:
+                    sim_state, strategy: Strategy, omega:float) -> None:
         """Base player model
 
         Args:
@@ -22,6 +22,7 @@ class Player:
             migrate_prob (float): Probability with which a player may migrate (if at all) - Can generalize this to a prob. dist over migrate_window
             sim_state: (Simulator): Reference to the Simulator to get access to other players
             strategy (Strategy): Strategy that this player follows
+            omega (float): Shadow of the future
         """
         self.id     = id
         self.loc    = loc
@@ -34,6 +35,7 @@ class Player:
         self.strategy       = strategy
         self.alive          = True
         self.history        = History()
+        self.omega          = omega
         
         # How much utility we gained last round 
         self.latest_util = 0
@@ -94,23 +96,22 @@ class Player:
                 self.loc = best_loc
 
     def make_move(self, player_two, game_config: Dict) -> Tuple[int, float]:
-        return self.strategy.make_move(self, player_two, game_config, self.history)
-
-    def iterated_move(self, player_two, game_config: Dict) -> Tuple[int, float]:
-        return self.strategy.iterated_move(self, player_two, game_config, self.history)
+        return self.strategy.make_move(self, player_two, game_config)
 
     def _reset(self):
         """In case we want to reset something for a single player, we can do it here
         """
         self.latest_util = 0
 
-    def add_to_history(self, epoch, other_id, other_util, data_dict):
+    def add_to_history(self, epoch, opponent_id, player_decision, opponent_decision, opponent_util, data_dict):
         """Player adds game to history
         
             Args:
-            epoch (int)         : epoch of the game
-            other_id (int)      : id of the opponent
-            other_util (float)  : utility of the opponent
-            data_dict           : additional data dictionary
+            epoch (int)             : epoch of the game
+            other_id (int)          : id of the opponent
+            player_decision (0/1)   : decision of the player
+            other_decision (0/1)    : decision of the opponent
+            other_util (float)      : utility of the opponent
+            data_dict               : additional data dictionary
         """
-        self.history.add_game(Game_data(epoch, self.id, other_id, self.latest_util, other_util, data_dict))
+        self.history.add_game(Game_data(epoch, self.id, opponent_id, player_decision, opponent_decision, self.latest_util, opponent_util, data_dict))

@@ -51,7 +51,7 @@ $u_3 := u(RAND_p, TF2T_2) = p(S + \omega * u(RAND_p, TF2T))+(1-p)(P + \omega * u
 
 $u_3 = \frac{pS+ωp*u_1+p-p^2}{1-ω+ωp}$
 $\implies u_2 = p(R + \omega * u_1)+(1-p)(T + \omega * \frac{pS+ωp*u_1+p-p^2}{1-ω+ωp}) = p\left(R+ωu_1\right)+\left(1-p\right)\left(T+\frac{ω\left(pS+ωpu_1+p-p^2\right)}{1-ω+ωp}\right)$
-$\implies u_1 = p(R + \omega * u_1)+(1-p)(T + \omega * (p\left(R+ωu_1\right)+\left(1-p\right)\left(T+\frac{ω\left(pS+ωpu_1+p-p^2\right)}{1-ω+ωp}\right))) = \frac{-ω^2p^4+3ω^2p^3+ω^2p^3T-ω^2p^3R+ω^2p^3S-3ω^2p^2-3ω^2p^2T+2ω^2p^2R-2ω^2p^2S+ω^2p+3ω^2pT-pT+pR-ω^2pR+ω^2pS+T-ω^2T}{-ω+1}$
+$\implies u_1 = p(R + \omega * u_1)+(1-p)(T + \omega * (p\left(R+ωu_1\right)+\left(1-p\right)\left(T+\frac{ω\left(pS+ωpu_1+p-p^2\right)}{1-ω+ωp}\right))) = \frac{-ω^2p^4+3ω^2p^3+ω^2p^3T-ω^2p^3R+ω^2p^3S-3ω^2p^2-3ω^2p^2T+2ω^2p^2R-2ω^2p^2S+ω^2p+3ω^2pT-pT+pR-ω^2pR+ω^2pS+T-ω^2T}{-ω+1} = \frac{-ω^2p^4+ω^2p^3*(3+T-R+S) + ω^2p^2*(-3-3T+2R-2S)+ω^2p(1+3T)+p(-T+R)+ω^2p*(-R+S)+T-ω^2T}{1-ω}$
 
 ## AD
 
@@ -237,7 +237,10 @@ $u(TFTD, TF2T) = T + \omega * u(AC, AC) = T + \frac \omega {1-\omega} * R$
 
 ##### vs. RANDOM with param p
 
-$u(TF2T, RAND_p)=\frac{-ω^2p^4+3ω^2p^3+ω^2p^3S-ω^2p^3R+ω^2p^3T-3ω^2p^2-3ω^2p^2S+2ω^2p^2R-2ω^2p^2T+ω^2p+3ω^2pS-pS+pR-ω^2pR+ω^2pT+S-ω^2S}{-ω+1}$
+wie $u(RAND_{p}, TF2T)$ aber mit T -> S, S -> T
+
+$u(TF2T, RAND_p)=\frac{-ω^2p^4+3ω^2p^3+ω^2p^3S-ω^2p^3R+ω^2p^3T-3ω^2p^2-3ω^2p^2S+2ω^2p^2R-2ω^2p^2T+ω^2p+3ω^2pS-pS+pR-ω^2pR+ω^2pT+S-ω^2S}{-ω+1}
+=\frac{-ω^2p^4+ω^2p^3*(3+S-R+T) + ω^2p^2*(-3-3S+2R-2T)+ω^2p(1+3S)+p(-S+R)+ω^2p*(-R+T)+S-ω^2S}{1-ω}$
 
 ##### vs. AD
 

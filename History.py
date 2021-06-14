@@ -36,3 +36,14 @@ class History:
                 if self.history[opponent_id][i].epoch >= oldest_epoch:
                     self.history[opponent_id] = self.history[opponent_id][i:]
                     break
+
+    def game_list(self, opponent_id):
+        """Return game list matching opponent_id
+
+        Args:
+            opponent_id (int): id of the opponent
+        """
+        if self.history.get(opponent_id) == None:
+            return []
+        else:
+            return self.history[opponent_id]

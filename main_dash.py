@@ -174,8 +174,9 @@ def update_figure(clicks, colorscale, val_T: int = 1, val_R: int = 1, val_P: int
     imit_prob = 0.8
     migrate_prob = 0.8
     epochs = 100
+    omega = 0.5
 
-    player_cfgs = generate_players("random", num_players, play_window, migrate_window, imit_prob, migrate_prob)
+    player_cfgs = generate_players("random", num_players, play_window, migrate_window, imit_prob, migrate_prob, omega)
     # player_cfgs = generate_players("random", num_players, play_window, migrate_window, imit_prob, migrate_prob)
     sim = Simulator(grid_x, grid_y, num_players, play_window, migrate_window, player_cfgs, val_T, val_R, val_S, val_P   )
 
