@@ -190,7 +190,7 @@ class GT(Strategy):
             utility = R/(1-w)
         else:
             raise NotImplementedError
-            
+
         return decision, utility
 
 
@@ -264,7 +264,7 @@ class TFTD(Strategy):
         elif player_two.strategy.name == "DEFECT":
             utility = P*(1-w)
         elif player_two.strategy.name == "COOPERATE":
-            utility = T + w*R(1-w)
+            utility = T + w*R*(1-w)
         elif player_two.strategy.name == "GT":
             utility = T + w*S + w**2*R/(1-w)
         elif player_two.strategy.name == "TFT":

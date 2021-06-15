@@ -4,29 +4,28 @@ from Strategies import *
 import time
 
 
-def generate_players(strategy: str, amount: int, play_window: int, migrate_window: int, imit_prob: float, migrate_prob: float, omega: float):
-    
-    strategy_obj = None
-    if strategy == "RANDOM":
-        strategy_obj = RANDOM(0.5)
-    elif strategy == "DEFECT":
-        strategy_obj = DEFECT()
-    elif strategy == "COOPERATE":
-        strategy_obj = COOPERATE()
-    elif strategy == "GT":
-        strategy_obj = GT()
-    elif strategy == "TFT":
-        strategy_obj = TFT()
-    elif strategy == "TFTD":
-        strategy_obj = TFTD()
-    elif strategy == "TF2T":
-        strategy_obj = TF2T()
-    else:
-        assert False, "Unkown strategy type"
-
+def generate_players(strategies, amount: int, play_window: int, migrate_window: int, imit_prob: float, migrate_prob: float, omega: float):
     player_cfgs = []
-
     for i in range(amount):
+        strategy = strategies[i%len(strategies)]
+        strategy_obj = None
+        if strategy == "RANDOM":
+            strategy_obj = RANDOM(0.5)
+        elif strategy == "DEFECT":
+            strategy_obj = DEFECT()
+        elif strategy == "COOPERATE":
+            strategy_obj = COOPERATE()
+        elif strategy == "GT":
+            strategy_obj = GT()
+        elif strategy == "TFT":
+            strategy_obj = TFT()
+        elif strategy == "TFTD":
+            strategy_obj = TFTD()
+        elif strategy == "TF2T":
+            strategy_obj = TF2T()
+        else:
+            assert False, "Unkown strategy type"
+        
         player_cfgs.append({
             "play_window": play_window,
             "migrate_window": migrate_window,
@@ -52,10 +51,10 @@ if __name__ == "__main__":
     migrate_window  = 3
     imit_prob       = 0.8
     migrate_prob    = 0.8
-    epochs          = 1
+    epochs          = 100
     omega          = 0.5
     
-    player_cfgs = generate_players("RANDOM", num_players, play_window, migrate_window, imit_prob, migrate_prob, omega)
+    player_cfgs = generate_players(["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"], num_players, play_window, migrate_window, imit_prob, migrate_prob, omega)
 
     sim = Simulator(grid_x, grid_y, num_players, play_window, migrate_window, player_cfgs, T, R, S, P)
 
