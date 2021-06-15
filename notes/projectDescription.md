@@ -44,6 +44,8 @@ The simulation would be on a (interactive) website to play with the rewards, and
 - Prisoners Dilemma (and where they can be applied)
 - Schatten der Zukunft (Reward in Zukunft weniger wert -> konvergenz für unendliches Spiel)
 
+## Themen für Auswertung
+
 ### Bsp Gefangenendilemma (von Experimentelle Spieltheorie)
 
 Diamanten im wert von 2Mio gestohlen.
@@ -78,6 +80,6 @@ Annahmen:
 
 3. Basisspiel:
    $T > R > P > S$
-   $ R > \frac{T+S}{2}$ (CDCDCDCD ausschliessen)
+   $R > \frac{T+S}{2}$ (CDCDCDCD ausschliessen)
 
 4. Unendlcih viele Iterationen (Nicht bekannt welche letzte Runde)
