@@ -1,5 +1,6 @@
 
 import multiprocessing as mp
+import numpy as np
 from queue import Empty
 import time
 from Simulator import Simulator
@@ -7,7 +8,7 @@ from test_simulator import generate_players
 
 class SimulatorProcess(mp.Process):
 
-    def __init__(self, task_queue, result_queue, step_size=100) -> None:
+    def __init__(self, task_queue, result_queue, step_size=50) -> None:
         mp.Process.__init__(self)
         self.task_queue = task_queue
         self.result_queue = result_queue
@@ -16,46 +17,93 @@ class SimulatorProcess(mp.Process):
     def run(self):
         sim = None
         proc_name = self.name
+        state = 0       # 0 Not running # 1 Running # 2 Paused  
+        history = []
         while True:
             try:
                 next_task = self.task_queue.get(False)  # Non-blocking get 
+                ####
+                ## Receive Messages
+                ####
                 if next_task.msg_type == "RESTART":
+
+                    self.strats = next_task.msg_content['strategies']
+                    self.step_size =next_task.msg_content['step-size']
                     # Reset the simulation here
-                    player_cfgs = generate_players( next_task.msg_content['strategy'],
-                                                    next_task.msg_content['num_players'],
+                    player_cfgs = generate_players( next_task.msg_content['strategies'],
+                                                    next_task.msg_content['counts'],
                                                     next_task.msg_content['play_window'],
                                                     next_task.msg_content['migrate_window'],
                                                     next_task.msg_content['imit_prob'],
-                                                    next_task.msg_content['migrate_prob'])
-                    sim = Simulator(    next_task.msg_content['grid_x'],
-                                        next_task.msg_content['grid_y'],
-                                        next_task.msg_content['num_players'],
-                                        next_task.msg_content['play_window'],
-                                        next_task.msg_content['migrate_window'],
-                                        player_cfgs,
-                                        next_task.msg_content['T'],
-                                        next_task.msg_content['R'],
-                                        next_task.msg_content['S'], 
-                                        next_task.msg_content['P'])
-                    print(f"Restarted Simulation with new CFG { next_task.msg_content['grid_x']} x { next_task.msg_content['grid_y']}")
-                elif next_task.msg_type == "EXIT":
+                                                    next_task.msg_content['migrate_prob'],
+                                                    next_task.msg_content['omega'])
+                    sim = Simulator(next_task.msg_content['grid_x'],
+                                    next_task.msg_content['grid_y'],
+                                    next_task.msg_content['num_players'],
+                                    next_task.msg_content['play_window'],
+                                    next_task.msg_content['migrate_window'],
+                                    player_cfgs,
+                                    next_task.msg_content['T'],
+                                    next_task.msg_content['R'],
+                                    next_task.msg_content['S'], 
+                                    next_task.msg_content['P'])
+
+                    history = []
+                    state = 1
+
+                    print(f"Restarted Simulation with new CFG { next_task.msg_content['grid_x']} x { next_task.msg_content['grid_y']} - Num_players: {next_task.msg_content['num_players']}")
+                
+                elif next_task.msg_type == "RESET":
+                    
                     # Poison pill means shutdown
-                    print('{}: Exiting'.format(proc_name))
-                    break
+                    print('{}: Resetting the Simulation'.format(proc_name))
+                    sim = None
+                    history = []
+                    state = 0
+                
+                elif next_task.msg_type == "TOGGLE":
+                    
+                    if state == 1:
+                        # Poison pill means shutdown
+                        print('{}: Pausing'.format(proc_name))
+                        state = 2
+                    elif state == 2:
+                        if sim is None:
+                            print(f"Cannot find prior simulation please start first.")
+                        else:
+                            print(f"Continuing the simulation")
+                            state = 1
+                    else:
+                        print(f"Nothing to continue")
+
             except Empty:
-                #print("Continue to work")
-                #time.sleep(2)
+                time.sleep(0.25)
                 pass
 
             
-            if sim is not None:
+            if sim is not None and state == 1:
                 start_t = time.time()
                 sim.simulate(self.step_size)
                 
                 print(f"Done with step: {time.time()-start_t} - Epoch: {sim.total_epoch}")
                 start_t = time.time()
-                answer = {'grid': sim.grid}     # TODO compute full output state at this point
-                print(f"Queue is full: {self.result_queue.full()}")
+
+                # Prepare the ouput 
+                def my_map(x):
+                    if x == 0:
+                        return x
+                    else:
+                        return self.strats.index(sim.players[int(x)-1].strategy.name)+1
+
+                print(f"Counted players {len(np.nonzero(np.vectorize(my_map)(sim.grid))[0])}")
+
+
+                answer = { 'epoch': sim.total_epoch,
+                           'grid' : np.vectorize(my_map)(sim.grid)
+                        }     # TODO compute full output state at this point
+
+                history.append(answer)
+                #print(f"Queue is full: {self.result_queue.full()}")
                 self.result_queue.put(answer, False)
                 print(f"Continue runner {time.time()-start_t}")
 
@@ -85,7 +133,8 @@ if __name__ == '__main__':
             'migrate_window'  : 3,
             'imit_prob'       : 0.8,
             'migrate_prob'    : 0.8,
-            'epochs'          : 1000
+            'epochs'          : 1000,
+            'step-size'       : 20
     }
 
 

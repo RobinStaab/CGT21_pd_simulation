@@ -73,8 +73,8 @@ class Simulator:
                              self, p_cfg["strategy"], p_cfg["omega"])
 
             self.match_ups[p_id] = []
-            self._update_location(True, select_locs[idx], p_id)
             self.players.append(player)
+            self._update_location(True, select_locs[idx], p_id)
 
         # Setup policies
         self.migration_order_policy = lambda x: x   # Identity migration
@@ -110,6 +110,10 @@ class Simulator:
                         self.match_ups[int(self.grid[x_mod,y_mod])].append(id)
                         self.match_ups[id].append(int(self.grid[x_mod,y_mod]))
 
+                        # TODO append to play_neighbourhood
+                        self.players[id-1].play_neighbourhood.append(int(self.grid[x_mod,y_mod]))
+                        self.players[int(self.grid[x_mod,y_mod])-1].play_neighbourhood.append(id)
+
             # 2. Update the grid state
             self.grid[loc] = id
         else:
@@ -122,6 +126,12 @@ class Simulator:
                     if (x_mod,y_mod) != loc and self.grid[x_mod,y_mod] != 0:
                         # Found a match-up
                         self.match_ups[int(self.grid[x_mod,y_mod])] = list(filter(lambda x: x != id, self.match_ups[int(self.grid[x_mod,y_mod])]))
+
+                        # TODO Remove ourselves from other players
+                        self.players[int(self.grid[x_mod,y_mod])-1].play_neighbourhood = list(filter(lambda x: x != id, self.players[int(self.grid[x_mod,y_mod])-1].play_neighbourhood))
+
+            # TODO Reset neighbour list
+            self.players[id-1].play_neighbourhood = []
 
             self.match_ups[id] = [] # Can reset ourselves
 
@@ -180,9 +190,8 @@ class Simulator:
         """
         # ordered_players = self.migration_order_policy(self.players)
 
-        # for p in ordered_players:
-        #     p.migrate()
-        pass
+        for p in self.players:
+            p.imitate()
 
     def play(self, epoch):
         """ Play all matchups and update the state accordingly

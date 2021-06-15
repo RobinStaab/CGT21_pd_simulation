@@ -41,10 +41,10 @@ class Player:
         self.latest_util = 0
 
         # List of players ID's in our neighbourhood
-        self.play_neighbourhood: List[int]
+        self.play_neighbourhood: List[int] = []
 
         # List of tuples containing the potential locations that we can travel to
-        self.migrate_neighbourhood: List
+        self.migrate_neighbourhood: List = []
 
     def imitate(self) -> None:
         """Imitates the most successfully strategy in the window.
@@ -55,31 +55,33 @@ class Player:
             new_strategy = self.strategy
             best_util = self.latest_util
             for n_id in self.play_neighbourhood:    # TODO
-                if self.sim_state.players[id].latest_util > best_util:
-                    best_util = self.sim_state.players[id].latest_util
-                    new_strategy = self.sim_state.players[id].strategy
+                if self.sim_state.players[n_id-1].latest_util > best_util:
+                    best_util = self.sim_state.players[n_id-1].latest_util
+                    new_strategy = self.sim_state.players[n_id-1].strategy
+
+            # TODO Could do some history changes here
 
             self.strategy = new_strategy
 
     def migrate(self) -> None:
         """Migrates to the free square with the best expected payoff 
         """
-        # TODO Do we really always want to do this? Could implement custom 
+        # TODO Do we really always want to do this? Could implement custom migration policies here
         r = random()
         if r < self.migrate_prob:
             # We migrate if we find a better spot
 
             if self.sim_state.wrap:
-                x_l, x_h = self.loc[0]-self.play_window, self.loc[0]+self.play_window
-                y_l, y_h = self.loc[1]-self.play_window, self.loc[1]+self.play_window
+                x_l, x_h = self.loc[0]-self.migrate_window, self.loc[0]+self.migrate_window
+                y_l, y_h = self.loc[1]-self.migrate_window, self.loc[1]+self.migrate_window
             else:
-                x_l, x_h = max(0, self.loc[0]-self.play_window), min(self.grid_x, self.loc[0]+self.play_window)
-                y_l, y_h = max(0, self.loc[1]-self.play_window), min(self.grid_y, self.loc[1]+self.play_window)
+                x_l, x_h = max(0, self.loc[0]-self.migrate_window), min(self.grid_x, self.loc[0]+self.migrate_window)
+                y_l, y_h = max(0, self.loc[1]-self.migrate_window), min(self.grid_y, self.loc[1]+self.migrate_window)
 
 
             best_loc    = self.loc
             best_util   = self.latest_util
-            # NOTE This could be updated on fly - by is constant time overhead
+            # NOTE This could be updated on fly - but this is constant time overhead
             migrate_neighbourhood = [(x % self.sim_state.grid_x, y % self.sim_state.grid_y) for x in range(x_l, x_h+1) for y in range(y_l, y_h+1) if self.sim_state.grid[(x % self.sim_state.grid_x, y % self.sim_state.grid_y)] == 0]
             for f_loc in migrate_neighbourhood:
                 # How high would our payoff be here
