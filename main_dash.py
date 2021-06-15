@@ -249,7 +249,7 @@ def start_sim(clicks, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S: int
             'R' : val_R,
             'S' : val_S,
             'P' : val_P,
-            'strategy'        : "random",
+            'strategy'        : "RANDOM",
             'grid_x'          : 22,
             'grid_y'          : 22,
             'num_players'     : int(22*22*0.4),

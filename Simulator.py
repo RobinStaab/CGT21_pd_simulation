@@ -196,7 +196,7 @@ class Simulator:
 
                     if self.use_iterated_policy:  # We used an iterated policy which directly returns the values
                         p1_dec, p1_util  = player_one.make_move(player_two, self.values)
-                        p2_dec, p1_util  = player_two.make_move(player_one, self.values)
+                        p2_dec, p2_util  = player_two.make_move(player_one, self.values)
                     else: # We used a step policy and can look_up the values from the matrix
                         p1_dec, _  = player_one.make_move(player_two, self.values)
                         p2_dec, _  = player_two.make_move(player_one, self.values)

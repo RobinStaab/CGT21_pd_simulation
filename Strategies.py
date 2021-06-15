@@ -28,7 +28,7 @@ class Strategy(object):
     def __str__(self) -> str:
         return self.name
 
-class Random(Strategy):
+class RANDOM(Strategy):
 
     def __init__(self, coop_prob) -> None:
         """Random-Strategy 
@@ -62,11 +62,11 @@ class Random(Strategy):
         elif player_two.strategy.name == "GT":
             utility = (p*R + (1-p)*(T+w*(p*S + (1-p)*P)/(1-w)))/(1-p*w)
         elif player_two.strategy.name == "TFT":
-            utility = (p^2*w*(T+S-R-P) + p*(2*w*P + R*(w-1) - 2*w*T + T - w*S) - w*P + T*(w-1))/(w-1)
+            utility = (p**2*w*(T+S-R-P) + p*(2*w*P + R*(w-1) - 2*w*T + T - w*S) - w*P + T*(w-1))/(w-1)
         elif player_two.strategy.name == "TFTD":
-            utility = (w*p^3 + w*p^2*(R-S-T-1) + w*p*T + p*(S+1-p))/(w-1)
+            utility = (w*p**3 + w*p**2*(R-S-T-1) + w*p*T + p*(S+1-p))/(w-1)
         elif player_two.strategy.name == "TF2T":
-            utility = (-1*w^2*p^4 + w^2*p^3*(3+T-R+S) + w^2*p^2*(-3-3*T+2*R-2*S) + w^2*p(1+3*T) + p*(R-T) + w^2*p*(S-R) + T - w^2*T)/(1-w)
+            utility = (-1*w**2*p**4 + w**2*p**3*(3+T-R+S) + w**2*p**2*(-3-3*T+2*R-2*S) + w**2*p*(1+3*T) + p*(R-T) + w**2*p*(S-R) + T - w**2*T)/(1-w)
         else:
             raise NotImplementedError
 
@@ -75,7 +75,7 @@ class Random(Strategy):
     def __str__(self) -> str:
         return f"{self.name} p: {self.p}"
 
-class Defect(Strategy):
+class DEFECT(Strategy):
 
     def __init__(self) -> None:
         """Always Defect
@@ -106,13 +106,13 @@ class Defect(Strategy):
         elif player_two.strategy.name == "TFTD":
             utility = P/(1-w)
         elif player_two.strategy.name == "TF2T":
-            utility = T + w*T + w^2*P/(1-w)
+            utility = T + w*T + w**2*P/(1-w)
         else:
             raise NotImplementedError
 
         return decision, utility
 
-class Cooperate(Strategy):
+class COOPERATE(Strategy):
 
     def __init__(self) -> None:
         """Always Cooperate
@@ -162,7 +162,7 @@ class GT(Strategy):
         previous_games = player_one.history.game_list(player_two.id)
         if len(previous_games) == 0:
             decision = 0
-        elif [game.opponent_decision for game in previous_games].contains(1) :
+        elif 1 in [game.opponent_decision for game in previous_games] :
             decision = 1
         else:
             decision = 0 
@@ -185,12 +185,12 @@ class GT(Strategy):
         elif player_two.strategy.name == "TFT":
             utility = R/(1-w)
         elif player_two.strategy.name == "TFTD":
-            utility = S + w*T + w^2*P/(1-w)
+            utility = S + w*T + w**2*P/(1-w)
         elif player_two.strategy.name == "TF2T":
             utility = R/(1-w)
         else:
             raise NotImplementedError
-
+            
         return decision, utility
 
 
@@ -208,7 +208,7 @@ class TFT(Strategy):
         if len(previous_games) == 0:
             decision = 0
         else:
-            decision =  previous_games[-1].opponent_decision,0
+            decision =  previous_games[-1].opponent_decision
 
         w = player_one.omega
         R = game_config["R"]
@@ -218,7 +218,7 @@ class TFT(Strategy):
 
         if player_two.strategy.name == "RANDOM":
             p = player_two.strategy.p
-            utility = (w*p^3 + w*p^2*(R-T-S-2) + w*p*(1+T-R+2*S) + p*(R-S) + S - w*S)/(1-w)
+            utility = (w*p**3 + w*p**2*(R-T-S-2) + w*p*(1+T-R+2*S) + p*(R-S) + S - w*S)/(1-w)
         elif player_two.strategy.name == "DEFECT":
             utility = S + w*P/(1-w)
         elif player_two.strategy.name == "COOPERATE":
@@ -228,7 +228,7 @@ class TFT(Strategy):
         elif player_two.strategy.name == "TFT":
             utility = R/(1-w)
         elif player_two.strategy.name == "TFTD":
-            utility = (S + w*T)/(1-w^2)
+            utility = (S + w*T)/(1-w**2)
         elif player_two.strategy.name == "TF2T":
             utility = R/(1-w)
         else:
@@ -236,7 +236,7 @@ class TFT(Strategy):
 
         return decision, utility
     
-class DTFT(Strategy):
+class TFTD(Strategy):
 
     def __init__(self) -> None:
         """ Tit for Tat Defect
@@ -248,9 +248,9 @@ class DTFT(Strategy):
         # Check if a last move against this player existed and if yes, copy it, otherwise defect
         previous_games = player_one.history.game_list(player_two.id)
         if len(previous_games) == 0:
-            decision =  1, 0
+            decision =  1
         else:
-            decision =  previous_games[-1].opponent_decision,0
+            decision =  previous_games[-1].opponent_decision
 
         w = player_one.omega
         R = game_config["R"]
@@ -260,15 +260,15 @@ class DTFT(Strategy):
 
         if player_two.strategy.name == "RANDOM":
             p = player_two.strategy.p
-            utility = (w*p^3 + w*p^2*(R-T-S-1) + w*p*S + p*(T+1-p))/(w-1)
+            utility = (w*p**3 + w*p**2*(R-T-S-1) + w*p*S + p*(T+1-p))/(w-1)
         elif player_two.strategy.name == "DEFECT":
             utility = P*(1-w)
         elif player_two.strategy.name == "COOPERATE":
             utility = T + w*R(1-w)
         elif player_two.strategy.name == "GT":
-            utility = T + w*S + w^2*R/(1-w)
+            utility = T + w*S + w**2*R/(1-w)
         elif player_two.strategy.name == "TFT":
-            utility = (T+w*S)/(1-w^2)
+            utility = (T+w*S)/(1-w**2)
         elif player_two.strategy.name == "TFTD":
             utility = P*(1-w)
         elif player_two.strategy.name == "TF2T":
@@ -305,11 +305,11 @@ class TF2T(Strategy):
         
         if player_two.strategy.name == "RANDOM":
             p = player_two.strategy.p
-            utility = (-1*w^2*p^4 + w^2*p^3*(3+S-R+T) + w^2*p^2*(-3-3*S+2*R-2*T) + w^2*p(1+3*S) + p*(R-S) + w^2*p*(T-R) + S - w^2*S)/(1-w)
+            utility = (-1*w**2*p**4 + w**2*p**3*(3+S-R+T) + w**2*p**2*(-3-3*S+2*R-2*T) + w**2*p*(1+3*S) + p*(R-S) + w**2*p*(T-R) + S - w**2*S)/(1-w)
         elif player_two.strategy.name == "DEFECT":
-            utility = S + w*S + w^2*P/(1-w)
+            utility = S + w*S + w**2*P/(1-w)
         elif player_two.strategy.name == "COOPERATE":
-            utility = S + w*S + w^2*P/(1-w)
+            utility = S + w*S + w**2*P/(1-w)
         elif player_two.strategy.name == "GT":
             utility = R/(1-w)
         elif player_two.strategy.name == "TFT":
