@@ -323,3 +323,124 @@ class TF2T(Strategy):
 
         return decision, utility
 
+
+# Additional strategies (no utility functions implemented for infinity game repetitions)
+
+class GTFT(Strategy):
+
+    def __init__(self) -> None:
+        """ Generous Tit for Tat: Following a defection, it cooperates with 
+            probability min{1-(T-R)/(R-S), (R-P)/(T-P)}.
+        """
+        self.name = "GTFT"
+        self.p = 0
+        super().__init__()
+
+    def make_move(self, player_one, player_two, game_config: Dict) -> Tuple[int, float]:
+        
+        R = game_config["R"]
+        S = game_config["S"]
+        T = game_config["T"]
+        P = game_config["P"]
+        
+        self.p = min([1-(T-R)/(R-S), (R-P)/(T-P)])
+        
+        previous_games = player_one.history.game_list(player_two.id)
+        if len(previous_games) == 0:
+            decision = 0
+        else:
+            if previous_games[-1] == 1:
+                r = random()
+                decision = int(r > self.p)
+            else:
+                decision = 0
+
+        # utility not implemented
+        utility = None
+
+        return decision, utility
+
+
+class ImpTFT(Strategy):
+
+    def __init__(self, prob) -> None:
+        """ Imperfect Tit for Tat: Imitates opponent's last move with high 
+            (but less than one) probability.
+        """
+        self.name = "ImpTFT"
+        self.p = prob
+        super().__init__()
+
+    def make_move(self, player_one, player_two, game_config: Dict) -> Tuple[int, float]:
+        
+        previous_games = player_one.history.game_list(player_two.id)
+        if len(previous_games) == 0:
+            decision = 0
+        else:
+            r = random()
+            if previous_games[-1] == 1:
+                decision = int(r < self.p)
+            else:
+                decision = int(r > self.p)
+
+        # utility not implemented
+        utility = None
+
+        return decision, utility
+
+
+class TTFT(Strategy):
+
+    def __init__(self) -> None:
+        """ Two Tits for Tat: Defects twice after being defected against, otherwise cooperates.
+        """
+        self.name = "TTFT"
+        super().__init__()
+
+    def make_move(self, player_one, player_two, game_config: Dict) -> Tuple[int, float]:
+        # Defect if one of the last two moves of the opponent were to defect
+        previous_games = player_one.history.game_list(player_two.id)
+        if len(previous_games) < 2:
+            decision =  0
+        elif previous_games[-1].opponent_decision == 1 or previous_games[-2].opponent_decision == 1:
+            decision =  1
+        else:
+            decision =  0
+
+        # utility not implemented
+        utility = None
+
+        return decision, utility
+    
+    
+# class nPavlov(Strategy):
+
+#     def __init__(self, n) -> None:
+#         """ n-Pavlov
+#         """
+#         self.name = "nPavlov"
+#         self.n = n
+#         super().__init__()
+
+#     def make_move(self, player_one, player_two, game_config: Dict) -> Tuple[int, float]:
+#         previous_games_one = player_one.history.game_list(player_one.id)
+#         previous_games_two = player_one.history.game_list(player_two.id)
+#         action_one = previous_games_one[-1]
+#         action_two = previous_games_two[-1]
+#         if len(previous_games_one) < 1:
+#             decision =  0
+#         else:
+#             r = random()
+#             if action_one + action_two == 2:
+                
+#         elif previous_games[-1].opponent_decision == 1 or previous_games[-2].opponent_decision == 1:
+#             decision =  1
+#         else:
+#             decision =  0
+
+#         # utility not implemented
+#         utility = None
+
+#         return decision, utility
+
+
