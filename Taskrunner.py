@@ -25,6 +25,7 @@ class SimulatorProcess(mp.Process):
                 ####
                 ## Receive Messages
                 ####
+                print(f"Received: {next_task.msg_type}")
                 if next_task.msg_type == "RESTART":
 
                     self.strats = next_task.msg_content['strategies']
@@ -85,7 +86,7 @@ class SimulatorProcess(mp.Process):
                 start_t = time.time()
                 sim.simulate(self.step_size)
                 
-                print(f"Done with step: {time.time()-start_t} - Epoch: {sim.total_epoch}")
+                #print(f"Done with step: {time.time()-start_t} - Epoch: {sim.total_epoch}")
                 start_t = time.time()
 
                 # Prepare the ouput 
