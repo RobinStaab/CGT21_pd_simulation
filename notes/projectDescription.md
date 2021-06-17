@@ -17,6 +17,7 @@ Baseline ideas:
     - Could investigate imitation and migration probability
     - Different memory-states (e.g. forget after some time)
     - Different communication between players
+    - Could look at multiple games (e.g. they play k games per round)
   - Strategies if players play an infinite amount of rounds against each other
     - Might involve less strategies
 
