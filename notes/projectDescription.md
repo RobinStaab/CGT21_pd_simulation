@@ -20,6 +20,57 @@ Baseline ideas:
     - Could look at multiple games (e.g. they play k games per round)
   - Strategies if players play an infinite amount of rounds against each other
     - Might involve less strategies
+  - 4 Non-trivial strategies: Implement further strategies
+
+
+  Chosen Theme:
+  - Repeated strategy in Spatial PD
+    - Base Game
+    - With / without migration
+    - With / Without imitation
+    - Optional PD - alpha abstention
+    - Different Start-Scenarios
+    - Friendly / Unfriendly
+      - Do they cluster?
+    - Variation von T, S, R, P
+  - Final chapter about consideration of infinite PD
+
+  ## Tool 
+  - Run multiple experiments at once
+  - Fix baseline
+
+## General 
+
+Abstract + Intro
+
+Related Work
+- Nando
+
+Theory + Our method
+- Robin & Jan
+
+Our results
+- At least 4 eyes 
+
+Discussions
+- At least 4 eyes 
+
+Infinite case - Stepping to this
+- Fabrice
+
+Future work
+
+Appendix
+
+## Szenarios
+
+Please write you setups here
+- 
+- 
+-
+-
+-
+
 
 
 ### Ground Idea
