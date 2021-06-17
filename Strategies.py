@@ -323,3 +323,70 @@ class TF2T(Strategy):
 
         return decision, utility
 
+
+# Additional strategies (no utility functions implemented for infinity game repetitions)
+
+class GTFT(Strategy):
+
+    def __init__(self) -> None:
+        """ Generous Tit for Tat: Following a defection, it cooperates with 
+            probability min{1-(T-R)/(R-S), (R-P)/(T-P)}.
+        """
+        self.name = "GTFT"
+        self.p = 0
+        super().__init__()
+
+    def make_move(self, player_one, player_two, game_config: Dict) -> Tuple[int, float]:
+        
+        R = game_config["R"]
+        S = game_config["S"]
+        T = game_config["T"]
+        P = game_config["P"]
+        
+        self.p = min([1-(T-R)/(R-S), (R-P)/(T-P)])
+        
+        previous_games = player_one.history.game_list(player_two.id)
+        if len(previous_games) == 0:
+            decision = 0
+        else:
+            if previous_games[-1] == 1:
+                r = random()
+                decision = int(r > self.p)
+            else:
+                decision = 0
+
+        # utility not implemented
+        utility = None
+
+        return decision, utility
+
+
+class ImpTFT(Strategy):
+
+    def __init__(self, prob) -> None:
+        """ Imperfect Tit for Tat: Imitates opponent's last move with high 
+            (but less than one) probability.
+        """
+        self.name = "ImpTFT"
+        self.p = prob
+        super().__init__()
+
+    def make_move(self, player_one, player_two, game_config: Dict) -> Tuple[int, float]:
+        
+        previous_games = player_one.history.game_list(player_two.id)
+        if len(previous_games) == 0:
+            decision = 0
+        else:
+            r = random()
+            if previous_games[-1] == 1:
+                decision = int(r < self.p)
+            else:
+                decision = int(r > self.p)
+
+        # utility not implemented
+        utility = None
+
+        return decision, utility
+
+
+
