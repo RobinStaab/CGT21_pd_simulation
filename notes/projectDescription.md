@@ -7,6 +7,20 @@ The simulation would be on a (interactive) website to play with the rewards, and
 
 ## Possible Ideas
 
+Baseline ideas:
+  - Basic simulation of the repeated strategies in spatial PD 
+    - Different strategy sets
+    - With and without migration
+    - Can use more complicated strategies
+    - Could investigate abstention and different reward / payoff behaviour
+    - Could investigate migration & play sizes
+    - Could investigate imitation and migration probability
+    - Different memory-states (e.g. forget after some time)
+    - Different communication between players
+  - Strategies if players play an infinite amount of rounds against each other
+    - Might involve less strategies
+
+
 ### Ground Idea
 
 - infinite repetitions
