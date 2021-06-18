@@ -3,6 +3,7 @@ from Simulator import Simulator
 from Player import Player
 from Strategies import *
 import time
+from analysis import *
 
 
 def generate_players(strategies: List[str], amount: List[int], play_window: int, migrate_window: int, imit_prob: float, migrate_prob: float, omega: float):
@@ -59,7 +60,7 @@ if __name__ == "__main__":
     omega          = 0.5
     
     player_cfgs = generate_players(["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"], 
-                                    [40, 10, 10, 10, 10, 10, 10], play_window, migrate_window, imit_prob, migrate_prob, omega)
+                                    [30, 10, 10, 10, 10, 10, 10], play_window, migrate_window, imit_prob, migrate_prob, omega)
 
     sim = Simulator(grid_x, grid_y, num_players, play_window, migrate_window, player_cfgs, T, R, S, P)
 
@@ -67,6 +68,12 @@ if __name__ == "__main__":
     for i in range(10):
         start_time = time.time()
         sim.simulate(epochs, visualize=False)
+        t = defection_per_class_over_time(sim.get_state(), ["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"] )
+        t3 = class_vs_class_over_time(sim.get_state(), ["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"] )
+        t4 = payoff_per_class_over_time(sim.get_state(), ["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"] )
+        t5 = percentage_of_optimum(sim.get_state(), ["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"] )
+        t2 = class_distribution_over_time(sim.get_flat_mapped_grid(), ["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"] )
+        #t6 = class_change_over_time
         print(f"Time: {(time.time() - start_time)}")
 
     print(f"Total Time for {epochs} epochs, {num_players} players and grid-size {grid_x} x {grid_y}: {(time.time() - start_time)}")

@@ -83,11 +83,11 @@ app.layout = html.Div(children=[
                     html.P(children="T"),
                     dcc.Slider(
                         id="slider-T",
-                        min=1,
+                        min=0,
                         max=40,
                         step=1,
                         marks={
-                            1: '1',
+                            0: '0',
                             10: '10',
                             20: '20',
                             30: '30',
@@ -99,11 +99,11 @@ app.layout = html.Div(children=[
                     html.P(children="R"),
                     dcc.Slider(
                         id="slider-R",
-                        min=1,
+                        min=0,
                         max=40,
                         step=1,
                         marks={
-                            1: '1',
+                            0: '0',
                             10: '10',
                             20: '20',
                             30: '30',
@@ -117,11 +117,11 @@ app.layout = html.Div(children=[
                 html.P(children="P"),
                 dcc.Slider(
                     id="slider-P",
-                    min=1,
+                    min=0,
                     max=40,
                     step=1,
                     marks={
-                        1: '1',
+                        0: '0',
                         10: '10',
                         20: '20',
                         30: '30',
@@ -133,11 +133,11 @@ app.layout = html.Div(children=[
                 html.P(children="S"),
                 dcc.Slider(
                     id="slider-S",
-                    min=1,
+                    min=0,
                     max=40,
                     step=1,
                     marks={
-                        1: '1',
+                        0: '0',
                         10: '10',
                         20: '20',
                         30: '30',
@@ -150,6 +150,58 @@ app.layout = html.Div(children=[
                 html.Button('Start', id='start', n_clicks=0),
                 html.Button('Pause', id='toggle', n_clicks=0),
                 html.Button('Reset', id='stop', n_clicks=0),
+
+                # Basic settings - TODO Make me look nice, also probably default values would be reasonable
+                dcc.Input(
+                        id="grid_x",
+                        type="number",
+                        placeholder="Width of Field"
+                    ),
+                dcc.Input(
+                        id="grid_y",
+                        type="number",
+                        placeholder="Height of Field"
+                    ),
+                dcc.Input(
+                        id="play_window",
+                        type="number",
+                        placeholder="Window play size"
+                    ),
+                dcc.Input(
+                        id="travel_window",
+                        type="number",
+                        placeholder="Window in which agents travel"
+                    ),
+                dcc.Input(
+                        id="rand_seed",
+                        type="number",
+                        placeholder="Random Seed"
+                    ),
+                dcc.Input(
+                        id="imit_prob",
+                        type="number",
+                        placeholder="Imitation probability",
+                        min=0, max=1, step=0.1
+                    ),
+                dcc.Input(
+                        id="migrate_prob",
+                        type="number",
+                        placeholder="Migration probability",
+                        min=0, max=1, step=0.1
+                    ),
+                dcc.Input(
+                        id="step_size",
+                        type="number",
+                        placeholder="Step Size",
+                        min=1, max=100, step=1
+                    ),
+                dcc.Input(
+                        id="omega",
+                        type="number",
+                        placeholder="Omega probability",
+                        min=0, max=1, step=0.1
+                    ),
+
                 dcc.Dropdown(
                     id='colorscale',
                     options=[{"value": x, "label": x}
@@ -211,10 +263,20 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
     [State("slider-T", 'value'),
      State("slider-R", 'value'),
      State("slider-P", 'value'),
-     State("slider-S", 'value'),    # NOTE Please append all fixed features before here so that we can use *args for the strategies
+     State("slider-S", 'value'),
+     State("grid_x", "value"),
+     State("grid_y", "value"),
+     State("play_window", "value"),
+     State("travel_window", "value"),
+     State("imit_prob", "value"),
+     State("migrate_prob", "value"),
+     State("omega", "value"),
+     State("step_size", "value"),
+     State("rand_seed", "value"),
+     # NOTE Please append all fixed features before here so that we can use *args for the strategies
      State({'role': 'strategy_slider', 'index': ALL}, 'value')], 
      prevent_initial_call=True)
-def start_sim(clicks, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S: int = 1, *args: tuple):
+def start_sim(clicks, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S: int = 1, grid_x: int = 40, grid_y: int = 40 , play_window: int = 1, travel_window: int = 3, imit_prob: float = 0.8, migrate_prob: float = 0.8, omega:float = 0.9, rand_seed: int = 42, step_size:int = 42,  *args: tuple):
 
     print("Started Simulation")
 
@@ -230,16 +292,16 @@ def start_sim(clicks, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S: int
             'P' : val_P,
             'strategies'      : strategy_names,
             'counts'          : strategy_counts,
-            'grid_x'          : 40,
-            'grid_y'          : 40,
+            'grid_x'          : grid_x,
+            'grid_y'          : grid_y,
             'num_players'     : sum(strategy_counts),
-            'play_window'     : 1,
-            'migrate_window'  : 3,
-            'imit_prob'       : 0.8,
-            'migrate_prob'    : 0.8,
-            'omega'           : 0.9,
+            'play_window'     : play_window,
+            'migrate_window'  : travel_window,
+            'imit_prob'       : imit_prob,
+            'migrate_prob'    : migrate_prob,
+            'omega'           : omega,
             'epochs'          : 10,
-            'step-size'       : 10
+            'step-size'       : step_size
     }
 
     task_queue.put(ProcessMsg("RESTART", msg_content=msg_dict))
