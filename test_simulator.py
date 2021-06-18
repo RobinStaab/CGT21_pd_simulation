@@ -28,6 +28,16 @@ def generate_players(strategies: List[str], amount: List[int], play_window: int,
                 strategy_obj = TFTD()
             elif strategy == "TF2T":
                 strategy_obj = TF2T()
+            elif strategy == "GTFT":
+                strategy_obj = GTFT()
+            elif strategy == "ImpTFT":
+                strategy_obj = ImpTFT()
+            elif strategy == "TTFT":
+                strategy_obj = TTFT()
+            elif strategy == "EARTHERLY":
+                strategy_obj = EARTHERLY()
+            elif strategy == "CHAMPION":
+                strategy_obj = CHAMPION()
             else:
                 assert False, "Unkown strategy type"
             
@@ -58,6 +68,10 @@ if __name__ == "__main__":
     migrate_prob    = 0.8
     epochs          = 100
     omega          = 0.5
+    
+    
+    # player_cfgs = generate_players(["GTFT","ImpTFT","TTFT","EARTHERLY","CHAMPION"], 
+    #                                 [40, 10, 10, 20, 20], play_window, migrate_window, imit_prob, migrate_prob, omega)
     
     player_cfgs = generate_players(["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"], 
                                     [30, 10, 10, 10, 10, 10, 10], play_window, migrate_window, imit_prob, migrate_prob, omega)

@@ -349,7 +349,7 @@ class GTFT(Strategy):
         if len(previous_games) == 0:
             decision = 0
         else:
-            if previous_games[-1] == 1:
+            if previous_games[-1].opponent_decision == 1:
                 r = random()
                 decision = int(r > self.p)
             else:
@@ -363,7 +363,7 @@ class GTFT(Strategy):
 
 class ImpTFT(Strategy):
 
-    def __init__(self, prob) -> None:
+    def __init__(self, prob=0.95) -> None:
         """ Imperfect Tit for Tat: Imitates opponent's last move with high 
             (but less than one) probability.
         """
@@ -378,7 +378,7 @@ class ImpTFT(Strategy):
             decision = 0
         else:
             r = random()
-            if previous_games[-1] == 1:
+            if previous_games[-1].opponent_decision == 1:
                 decision = int(r < self.p)
             else:
                 decision = int(r > self.p)
@@ -412,35 +412,76 @@ class TTFT(Strategy):
 
         return decision, utility
     
+
+'''
+class EARTHERLY(Strategy):
+
+    def __init__(self) -> None:
+        """ Eartherly: Keeps track of its partner's
+            defection rate (the fraction of total turns its 
+            partner has defected) so that after its partner defects,
+            EATHERLY can defect with probability equal to its
+            partner's defection rate.
+        """
+        self.name = "EARTHERLY"
+        super().__init__()
+
+    def make_move(self, player_one, player_two, game_config: Dict) -> Tuple[int, float]:
+        # Defect if one of the last two moves of the opponent were to defect
+        previous_games = player_one.history.game_list(player_two.id)
+        if len(previous_games) < 1:
+            decision =  0
+        else:
+            print(previous_games.opponent_decision)
+            defection_prob = sum(previous_games[:].opponent_decision) / len(previous_games[:].opponent_decision)
+            r = random()
+            decision =  int(r < defection_prob)
+
+        # utility not implemented
+        utility = None
+
+        return decision, utility
     
-# class nPavlov(Strategy):
+    
+class CHAMPION(Strategy):
 
-#     def __init__(self, n) -> None:
-#         """ n-Pavlov
-#         """
-#         self.name = "nPavlov"
-#         self.n = n
-#         super().__init__()
+    def __init__(self, n_cooperation=10, n_TFT=10) -> None:
+        """ Champion: Begins with a short period
+            of unconditional cooperation, mirrors its partner's
+            moves for another short period, and thereafter does
+            the same as EATHERLY, except if its partner has
+            cooperated more than 60% of the time then CHAMPION 
+            cooperates even after its partner defects.
+            
+            n_cooperation: length of unconditional cooperation 
+                period at the start
+            n_TFT: lenght of the TFT period after the cooperation
+                period
+        """
+        self.name = "CHAMPION"
+        self.n_cooperation = n_cooperation
+        self.n_TFT = n_TFT
+        super().__init__()
 
-#     def make_move(self, player_one, player_two, game_config: Dict) -> Tuple[int, float]:
-#         previous_games_one = player_one.history.game_list(player_one.id)
-#         previous_games_two = player_one.history.game_list(player_two.id)
-#         action_one = previous_games_one[-1]
-#         action_two = previous_games_two[-1]
-#         if len(previous_games_one) < 1:
-#             decision =  0
-#         else:
-#             r = random()
-#             if action_one + action_two == 2:
-                
-#         elif previous_games[-1].opponent_decision == 1 or previous_games[-2].opponent_decision == 1:
-#             decision =  1
-#         else:
-#             decision =  0
+    def make_move(self, player_one, player_two, game_config: Dict) -> Tuple[int, float]:
+        # Defect if one of the last two moves of the opponent were to defect
+        previous_games = player_one.history.game_list(player_two.id)
+        if len(previous_games) <= self.n_cooperation:
+            decision =  0
+        elif self.n_cooperation < len(previous_games) <= self.n_cooperation + self.n_TFT:
+            decision = previous_games[-1].opponent_decision
+        else:
+            defection_prob = sum(previous_games[:].opponent_decision) / len(previous_games[:].opponent_decision)
+            if defection_prob < 0.4:
+                decision = 0
+            else:
+                r = random()
+                decision =  int(r < defection_prob)
 
-#         # utility not implemented
-#         utility = None
+        # utility not implemented
+        utility = None
 
-#         return decision, utility
-
+        return decision, utility
+    
+''' 
 
