@@ -91,10 +91,10 @@ class SimulatorProcess(mp.Process):
                 if sim is not None and state == 1:
                     start_t = time.time()
 
-                    print(f"Starting step:")
+                    #print(f"Starting step:")
                     sim.simulate(self.step_size)
                     
-                    print(f"Done with step: {time.time()-start_t} - Epoch: {sim.total_epoch}")
+                    #print(f"Done with step: {time.time()-start_t} - Epoch: {sim.total_epoch}")
                     start_t = time.time()
 
                     # Prepare the ouput 
@@ -104,18 +104,18 @@ class SimulatorProcess(mp.Process):
                         else:
                             return self.strats.index(sim.players[int(x)-1].strategy.name)+1
 
-                    print(f"Counted players {len(np.nonzero(np.vectorize(my_map)(sim.grid))[0])}")
+                    #print(f"Counted players {len(np.nonzero(np.vectorize(my_map)(sim.grid))[0])}")
 
 
                     answer = { 'epoch': sim.total_epoch,
                             'grid' : np.vectorize(my_map)(sim.grid),
-                            'state': sim.get_state()
+                            #'state': sim.get_state()
                             }     # TODO compute full output state at this point
 
                     history.append(answer)
                     #print(f"Queue is full: {self.result_queue.full()}")
                     self.result_queue.put(answer, False)
-                    print(f"Continue runner {time.time()-start_t}")
+                    #print(f"Continue runner {time.time()-start_t}")
             except Exception:   # Simply reset
                 print("Broken")
                 sim = None

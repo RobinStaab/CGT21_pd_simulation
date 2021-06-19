@@ -233,8 +233,7 @@ app.layout = html.Div(
                             dcc.Input(
                                 id="step_size",
                                 type="number",
-
-                                value=1,
+                                value=10,
                                 min=1, max=100, step=1
                             ), ]),
 
@@ -262,12 +261,12 @@ app.layout = html.Div(
                         html.Div(children=[
                             html.Div(className="controlbuttons", children=[
                                 html.Button('Start', id='start', n_clicks=0),
-                                html.Button(
-                                    'Pause', id='toggle', n_clicks=0),
-                                html.Button('Reset', id='stop', n_clicks=0)
+                                html.Button('Pause', id='toggle', n_clicks=0),
+                                html.Button('Reset', id='stop', n_clicks=0),
+                                html.Button('Refresh', id='refresh', n_clicks=0)
                             ]),
                             dcc.Graph(id='play-graph', figure=fig),
-                            dcc.Interval(id='interval-component', interval=100,  # in milliseconds
+                            dcc.Interval(id='interval-component', interval=200,  # in milliseconds
                                          n_intervals=0)]),
                         html.Div(children=[
                             html.Div(className="timeline",
@@ -299,7 +298,7 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
 
     try:
         pot_res = res_queue.get(False)   # Non-Blocking get
-            
+
         print(f"Update: {pot_res['epoch']}")
         fig = go.Figure(data=go.Heatmap(
             name=f"Epoch: {pot_res['epoch']}",
@@ -308,14 +307,37 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
             ygap=1.5,
             hoverongaps=False))
         fig.update_layout(width=800, height=800, title=f"Epoch: {pot_res['epoch']}")
-        #print("what")
-        #print(f"WTF Hash: {pot_res['grid']}")
         return fig
     except Empty:
-        #fig = px.imshow([[1, 20, 30],
-        #         [20, 1, 60],
-        #         [30, 60, 1]])
         return dash.no_update
+
+
+# @ app.callback(
+#     Output('play-graph', 'figure'),
+#     Input('refresh', 'n_clicks'),
+#     prevent_initial_call=True)
+# def refresh_sim(*args):
+
+#     print("You clicked me!")
+#     try:
+#         pot_res = res_queue.get(False)   # Non-Blocking get
+#         print(f"Update1: {pot_res['epoch']} - Q-size: {res_queue.qsize()}")
+#         while not res_queue.empty() > 0:
+#             pot_res = res_queue.get(False)
+#             print(f"Found epoch: {pot_res['epoch']} - Q-size: {res_queue.qsize()}")
+
+#         print(f"Update: {pot_res['epoch']}")
+#         fig = go.Figure(data=go.Heatmap(
+#             name=f"Epoch: {pot_res['epoch']}",
+#             z=pot_res["grid"],
+#             xgap=1.5,
+#             ygap=1.5,
+#             hoverongaps=False))
+#         fig.update_layout(width=800, height=800, title=f"Epoch: {pot_res['epoch']}")
+
+#         return fig
+#     except Empty:
+#         return dash.no_update
 
 
 @ app.callback(
@@ -343,8 +365,7 @@ def start_sim(clicks, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S: int
 
     strategy_counts = args[0]
     strategy_names = list(Strategies.keys())
-    # Build the CFG-Message
-    # TODO Input the grid-size x and y, etc.
+
 
     msg_dict = {
         'T': val_T,
