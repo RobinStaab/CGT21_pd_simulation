@@ -1,0 +1,55 @@
+.main_app {
+  padding: 1rem;
+}
+
+.content {
+  padding: 2rem 0 2rem 0;
+}
+
+.content .header {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+
+.strategies > div > div {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 4fr 1fr 12fr;
+  grid-template-rows: 1fr;
+}
+
+.strategies input {
+  width: 60px;
+}
+
+.rewards {
+  width: 100%;
+}
+
+.rewards table {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+.rewardSlider {
+  display: grid;
+  grid-template-columns: 1fr 9fr;
+  grid-template-rows: 1fr;
+}
+
+.content .simulation .controlbuttons {
+  padding: 2rem 0 2rem 0;
+}
+
+.content .simulation .controlbuttons button {
+  margin-right: 1rem;
+}
+
+@media only screen and (min-device-width: 320px) {
+  .content .header {
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 4rem;
+  }
+}

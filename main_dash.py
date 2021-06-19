@@ -29,143 +29,173 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 
-Strategies = {'RANDOM': 1, 'DEFECT': 2, 'COOPERATE': 3, 'GT': 4, 'TFT': 5, 'TFTD': 6, 'TF2T': 7}
+Strategies = {'Random': 1, 'Defect': 2, 'Cooperate': 3,
+              'GrimmTrigger': 4, 'TFT': 5, 'TFTD': 6, 'TF2T': 7}
 fig = go.Figure()
 colorscales = px.colors.named_colorscales()
 
-task_queue  = None
-res_queue   = None
+task_queue = None
+res_queue = None
 
-app.layout = html.Div(children=[
-    dcc.Store(id='local_start', storage_type='local'),    # This feels really dirty but how can I have dash callback without an output?
-    dcc.Store(id='local_stop', storage_type='local'),    # Local Store to keep the Simulator
-    dcc.Store(id='local_toggle', storage_type='local'),    # Local Store to keep the Simulator
-    html.H1(children='INSERT TITLE Controversies in Game Theory 2021 - Prisoners Dilemma'),
+app.layout = html.Div(
+    className="main_app",
+    children=[
+        # This feels really dirty but how can I have dash callback without an output?
+        dcc.Store(id='local_start', storage_type='local'),
+        # Local Store to keep the Simulator
+        dcc.Store(id='local_stop', storage_type='local'),
+        # Local Store to keep the Simulator
+        dcc.Store(id='local_toggle', storage_type='local'),
+        html.H1(
+            children='Controversies in Game Theory 2021 - Repeated Prisoners Dilemma'),
 
-    html.Div(children='''
+        html.P(children='''
         Made by Fabrice Egger, Robin Staab, Jan Urech, Kim Nik Baumgartner'''),
-    html.Div(children=
-        '''short explanation of app usage'''),
-    html.Div(children=''' If you have any troubles don't hesitate to write us a mail to my kimbau@student.ethz.ch mail :)
+        html.P(children='''short explanation of app usage'''),
+        html.P(children=''' If you have any troubles don't hesitate to write us a mail to my kimbau@student.ethz.ch mail :)
     '''),
-    html.Div(children=[
-        html.Div(children=[
-            html.Div(children=[
-                html.H3(children='Strategies'),
-                html.Div([
-                html.Div(children=[
-                        html.P(children=f"Strategy: {_}"),
-                        dcc.Input(
-                            id={'role': 'strategy_input', 'index': _},
-                            type="number",
-                            placeholder=f"Number of players playing {_}",
+        html.Div(
+            className="content",
+            children=[
+                html.Div(className="header", children=[
+                    html.Div(className="strategies", children=[
+                        html.H3(children='Strategies'),
+                        html.Div([
+                            html.Div(children=[
+                                html.P(children=f"{_}"),
+                                dcc.Input(
+                                    id={'role': 'strategy_input', 'index': _},
+                                    type="number",
+                                    placeholder=f"Number of players playing {_}",
+                                ),
+                                dcc.Slider(
+                                    id={'role': 'strategy_slider', 'index': _},
+                                    min=0,
+                                    max=200,
+                                    step=1,
+                                    marks={
+                                        0: '0',
+                                        50: '50',
+                                        100: '100',
+                                        150: '150',
+                                        200: '200',
+                                    },
+                                    value=50,
+                                    persistence=True,
+                                )
+                            ]) for _, n in Strategies.items()
+                        ],),
+                    ]),
+                    html.Div(className="rewards", children=[
+                        html.H3(
+                            children='Regulating Rewards'),
+                        html.Table(children=[
+                            html.Thead(children=[
+                                html.Tr(children=[html.Td(""), html.Td(
+                                    "Cooperate"), html.Td("Defection")])
+                            ]),
+                            html.Tbody(children=[
+                                html.Tr(children=[html.Td("Cooperate"), html.Td(
+                                    "R, R"), html.Td("S, T")]),
+                                html.Tr(children=[html.Td("Defection"), html.Td(
+                                    "T, S"), html.Td("P, P")])
+                            ])
+                        ]),
+                        html.Div(className="rewardSlider", children=[
+                            html.P(children="T"),
+                            dcc.Slider(
+                                id="slider-T",
+                                min=1,
+                                max=40,
+
+                                step=1,
+                                marks={
+                                    1: '1',
+                                    10: '10',
+                                    20: '20',
+                                    30: '30',
+                                    40: '40',
+                                },
+                                value=30,
+                                persistence=True,
+                            ),
+                            html.P(children="R"),
+                            dcc.Slider(
+                                id="slider-R",
+                                min=1,
+                                max=40,
+                                step=1,
+                                marks={
+                                    1: '1',
+                                    10: '10',
+                                    20: '20',
+                                    30: '30',
+                                    40: '40',
+                                },
+                                value=20,
+                                persistence=True,
+                            ),
+
+                            html.P(children="P"),
+                            dcc.Slider(
+                                id="slider-P",
+                                min=1,
+                                max=40,
+                                step=1,
+                                marks={
+                                    1: '1',
+                                    10: '10',
+                                    20: '20',
+                                    30: '30',
+                                    40: '40',
+                                },
+                                value=10,
+                                persistence=True,
+                            ),
+                            html.P(children="S"),
+                            dcc.Slider(
+                                id="slider-S",
+                                min=1,
+                                max=40,
+                                step=1,
+                                marks={
+                                    1: '1',
+                                    10: '10',
+                                    20: '20',
+                                    30: '30',
+                                    40: '40'
+                                },
+                                value=5,
+                                persistence=True,
+                            )]),
+                    ]),
+                ]),
+                html.Div(className="simulation", children=[
+                    html.Div(className="controlbuttons", children=[
+                        html.Button('Start', id='start', n_clicks=0),
+                        html.Button(
+                            'Pause', id='toggle', n_clicks=0),
+                        html.Button('Reset', id='stop', n_clicks=0)
+                    ]),
+                    html.Div(className="game", children=[
+                        dcc.Dropdown(
+                            id='colorscale',
+                            options=[{"value": x, "label": x}
+                                     for x in colorscales],
+                            value='viridis',
+                            style={"display": "none"}
                         ),
-                        dcc.Slider(
-                            id={'role': 'strategy_slider', 'index': _},
-                           min=0,
-                           max=200,
-                           step=1,
-                           marks={
-                                1: '1',
-                               50: '50',
-                                100: '100',
-                                150: '150',
-                               200: '200',
-                           },
-                           value=50,
-                           persistence=True,
-                        )
-                ], style={'width': '49%', 'display': 'inline-block'}) for _,n in Strategies.items()
-                ],),
+                        dcc.Graph(id='play-graph', figure=fig),
+                        dcc.Interval(id='interval-component', interval=100,  # in milliseconds
+                                     n_intervals=0)]),
+                    html.Div(id='results-1', children='Summary will be displayed here',
+                             style={'width': '49%', 'display': 'inline-block'}),
+                ]),
             ]),
-                html.H4(children='Sliders for regulating rewards following'),
-                html.Div(children=[
-                    html.P(children="T"),
-                    dcc.Slider(
-                        id="slider-T",
-                        min=1,
-                        max=40,
-                        step=1,
-                        marks={
-                            1: '1',
-                            10: '10',
-                            20: '20',
-                            30: '30',
-                            40: '40',
-                        },
-                        value=1,
-                        persistence=True,
-                    ),
-                    html.P(children="R"),
-                    dcc.Slider(
-                        id="slider-R",
-                        min=1,
-                        max=40,
-                        step=1,
-                        marks={
-                            1: '1',
-                            10: '10',
-                            20: '20',
-                            30: '30',
-                            40: '40',
-                        },
-                        value=1,
-                        persistence=True,
-                    ),
-                ], style={'width': '49%', 'display': 'inline-block'}),
-                html.Div(id = "test",children=[
-                html.P(children="P"),
-                dcc.Slider(
-                    id="slider-P",
-                    min=1,
-                    max=40,
-                    step=1,
-                    marks={
-                        1: '1',
-                        10: '10',
-                        20: '20',
-                        30: '30',
-                        40: '40',
-                    },
-                    value=1,
-                    persistence=True,
-                ),
-                html.P(children="S"),
-                dcc.Slider(
-                    id="slider-S",
-                    min=1,
-                    max=40,
-                    step=1,
-                    marks={
-                        1: '1',
-                        10: '10',
-                        20: '20',
-                        30: '30',
-                        40: '40'
-                    },
-                    value=1,
-                    persistence=True,
-                )], style={'width': '49%', 'display': 'inline-block'}),
-
-                html.Button('Start', id='start', n_clicks=0),
-                html.Button('Pause', id='toggle', n_clicks=0),
-                html.Button('Reset', id='stop', n_clicks=0),
-                dcc.Dropdown(
-                    id='colorscale',
-                    options=[{"value": x, "label": x}
-                    for x in colorscales],
-                    value='viridis'
-                ),
-                dcc.Graph(id='play-graph', figure=fig),
-                dcc.Interval( id='interval-component', interval=100, # in milliseconds 
-                                n_intervals=0),
-                html.Div(id='results-1', children='Summary will be displayed here', style={'width': '49%', 'display': 'inline-block'}),
-            ]),
-        ]),
-        ])
+    ])
 
 
-@app.callback(
+@ app.callback(
     Output('play-graph', 'figure'),
     [Input('interval-component', 'n_intervals')],
     [State("slider-T", 'value'),
@@ -177,18 +207,19 @@ app.layout = html.Div(children=[
 def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S: int = 1, *args: tuple):
 
     # NOTE I just removed this for testing purposes
-    #inputs = [val_T, val_R, val_P, val_S] + list(args[0])       # This excludes any inputs not regulated through sliders but we can change this later if needed
+    # inputs = [val_T, val_R, val_P, val_S] + list(args[0])       # This excludes any inputs not regulated through sliders but we can change this later if needed
 
     try:
         pot_res = res_queue.get(False)   # Blocking get
         print("Update")
         fig = go.Figure(data=go.Heatmap(
-                    name=f"Epoch: {pot_res['epoch']}",
-                    z=pot_res["grid"],
-                    xgap=1.5,
-                    ygap=1.5,
-                    hoverongaps = False))
-        fig.update_layout(width=600, height=600, title=f"Epoch: {pot_res['epoch']}")
+            name=f"Epoch: {pot_res['epoch']}",
+            z=pot_res["grid"],
+            xgap=1.5,
+            ygap=1.5,
+            hoverongaps=False))
+        fig.update_layout(width=600, height=600,
+                          title=f"Epoch: {pot_res['epoch']}")
         return fig
     except Empty:
         """fig = go.Figure(data=go.Heatmap(
@@ -201,45 +232,44 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
                     hoverongaps = False))
         fig.update_layout(width=600, height=600, title=str(time.time()))"""
         return dash.no_update
-    
 
 
-
-@app.callback(
+@ app.callback(
     Output('local_start', 'data'),
     [Input('start', 'n_clicks')],
     [State("slider-T", 'value'),
      State("slider-R", 'value'),
      State("slider-P", 'value'),
-     State("slider-S", 'value'),    # NOTE Please append all fixed features before here so that we can use *args for the strategies
-     State({'role': 'strategy_slider', 'index': ALL}, 'value')], 
-     prevent_initial_call=True)
+     # NOTE Please append all fixed features before here so that we can use *args for the strategies
+     State("slider-S", 'value'),
+     State({'role': 'strategy_slider', 'index': ALL}, 'value')],
+    prevent_initial_call=True)
 def start_sim(clicks, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S: int = 1, *args: tuple):
 
     print("Started Simulation")
 
     strategy_counts = args[0]
-    strategy_names  = list(Strategies.keys())
+    strategy_names = list(Strategies.keys())
     # Build the CFG-Message
     # TODO Input the grid-size x and y, etc.
 
     msg_dict = {
-            'T' : val_T,
-            'R' : val_R,
-            'S' : val_S,
-            'P' : val_P,
-            'strategies'      : strategy_names,
-            'counts'          : strategy_counts,
-            'grid_x'          : 40,
-            'grid_y'          : 40,
-            'num_players'     : sum(strategy_counts),
-            'play_window'     : 1,
-            'migrate_window'  : 3,
-            'imit_prob'       : 0.8,
-            'migrate_prob'    : 0.8,
-            'omega'           : 0.9,
-            'epochs'          : 10,
-            'step-size'       : 10
+        'T': val_T,
+        'R': val_R,
+        'S': val_S,
+        'P': val_P,
+        'strategies': strategy_names,
+        'counts': strategy_counts,
+        'grid_x': 40,
+        'grid_y': 40,
+        'num_players': sum(strategy_counts),
+        'play_window': 1,
+        'migrate_window': 3,
+        'imit_prob': 0.8,
+        'migrate_prob': 0.8,
+        'omega': 0.9,
+        'epochs': 10,
+        'step-size': 10
     }
 
     task_queue.put(ProcessMsg("RESTART", msg_content=msg_dict))
@@ -247,26 +277,27 @@ def start_sim(clicks, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S: int
     return 1
 
 
-@app.callback(
+@ app.callback(
     Output('local_stop', 'data'),
     [Input('stop', 'n_clicks')],
-     prevent_initial_call=True)
+    prevent_initial_call=True)
 def stop_sim(*args):
     print("Reset Simulation")
     task_queue.put(ProcessMsg("RESET", msg_content=None))
     return 1
 
-@app.callback(
+
+@ app.callback(
     Output('local_toggle', 'data'),
     [Input('toggle', 'n_clicks')],
-     prevent_initial_call=True)
+    prevent_initial_call=True)
 def stop_sim(*args):
     print("Toggled Simulation")
     task_queue.put(ProcessMsg("TOGGLE", msg_content=None))
     return 1
 
 
-@app.callback(
+@ app.callback(
     Output({'role': 'strategy_slider', 'index': MATCH}, 'value'),
     [Input({'role': 'strategy_input', 'index': MATCH}, 'value')], prevent_initial_call=True)
 def update_output(value: int):
@@ -276,7 +307,7 @@ def update_output(value: int):
 
 
 # This is stupid but I cant have the same output/input pair....
-@app.callback(
+@ app.callback(
     Output({'role': 'strategy_input', 'index': MATCH}, 'placeholder'),
     [Input({'role': 'strategy_slider', 'index': MATCH}, 'value')])
 def update_output(value: int):
@@ -288,14 +319,14 @@ def update_output(value: int):
 if __name__ == '__main__':
 
     # Establish communication queues
-    task_queue  = mp.Queue()
-    res_queue   = mp.Queue()
+    task_queue = mp.Queue()
+    res_queue = mp.Queue()
 
-    num_servers = 1 #mp.cpu_count() * 2
+    num_servers = 1  # mp.cpu_count() * 2
     print('Creating {} consumers'.format(num_servers))
-    consumers = [SimulatorProcess(task_queue, res_queue) for i in range(num_servers) ]
+    consumers = [SimulatorProcess(task_queue, res_queue)
+                 for i in range(num_servers)]
     for w in consumers:
         w.start()
-
 
     app.run_server(debug=True)
