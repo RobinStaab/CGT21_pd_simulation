@@ -223,8 +223,8 @@ class Simulator:
                     games_played += 1
 
                     #add to histories
-                    player_one.add_to_history(epoch, player_two.id, p1_dec, p2_dec, player_two.latest_util, {})
-                    player_two.add_to_history(epoch, player_one.id, p2_dec, p1_dec, player_one.latest_util, {})
+                    player_one.add_to_history(epoch, player_two.id, p1_dec, p2_dec, player_one.strategy.name, player_two.strategy.name, player_two.latest_util, {})
+                    player_two.add_to_history(epoch, player_one.id, p2_dec, p1_dec, player_two.strategy.name, player_one.strategy.name, player_one.latest_util, {})
 
         
         #print(f"Total games: {games_played}")
@@ -274,5 +274,25 @@ class Simulator:
             p._reset()
 
     def get_state(self) -> Dict:
-        raise NotImplementedError
-        pass
+        """ Returns the entire history of a played matches
+
+        Returns:
+            Dict: (player_id, player_history)
+        """
+
+        hist_dict = { }
+        for i, player in enumerate(self.players):
+            hist_dict[i+1] = player.history
+        
+        return hist_dict
+
+    def get_flat_mapped_grid(self):
+        # Prepare the ouput 
+        def grid_map(x):
+            if x == 0:
+                return x
+            else:
+                return self.players[int(x)-1].strategy.name
+        
+        list_2d = self.grid.flatten().tolist()
+        return map(grid_map, list_2d)

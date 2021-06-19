@@ -100,7 +100,8 @@ class SimulatorProcess(mp.Process):
 
 
                 answer = { 'epoch': sim.total_epoch,
-                           'grid' : np.vectorize(my_map)(sim.grid)
+                           'grid' : np.vectorize(my_map)(sim.grid),
+                           'state': sim.get_state()
                         }     # TODO compute full output state at this point
 
                 history.append(answer)

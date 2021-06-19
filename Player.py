@@ -105,7 +105,7 @@ class Player:
         """
         self.latest_util = 0
 
-    def add_to_history(self, epoch, opponent_id, player_decision, opponent_decision, opponent_util, data_dict):
+    def add_to_history(self, epoch, opponent_id, player_decision, opponent_decision, player_strategy, other_strategy, opponent_util, data_dict):
         """Player adds game to history
         
             Args:
@@ -113,7 +113,9 @@ class Player:
             other_id (int)          : id of the opponent
             player_decision (0/1)   : decision of the player
             other_decision (0/1)    : decision of the opponent
+            player_strategy         : strategy the player is currently following
+            other_strategy          : strategy the other player is currently following
             other_util (float)      : utility of the opponent
             data_dict               : additional data dictionary
         """
-        self.history.add_game(Game_data(epoch, self.id, opponent_id, player_decision, opponent_decision, self.latest_util, opponent_util, data_dict))
+        self.history.add_game(Game_data(epoch, self.id, opponent_id, player_decision, opponent_decision, player_strategy, other_strategy, self.latest_util, opponent_util, data_dict))
