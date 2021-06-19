@@ -58,199 +58,226 @@ app.layout = html.Div(
             className="content",
             children=[
                 html.Div(className="header", children=[
-                    html.Div(className="strategies", children=[
-                        html.H3(children='Strategies'),
-                        html.Div([
-                            html.Div(children=[
-                                html.P(children=f"{_}"),
-                                dcc.Input(
-                                    id={'role': 'strategy_input', 'index': _},
-                                    type="number",
-                                    placeholder=f"Number of players playing {_}",
-                                ),
+                    html.Div(className="sliders", children=[
+                        html.Div(className="strategies", children=[
+                            html.H3(children='Strategies'),
+                            html.Div([
+                                html.Div(children=[
+                                    html.P(children=f"{_}"),
+                                    dcc.Input(
+                                        id={'role': 'strategy_input', 'index': _},
+                                        type="number",
+                                        placeholder=f"Number of players playing {_}",
+                                    ),
+                                    dcc.Slider(
+                                        id={'role': 'strategy_slider', 'index': _},
+                                        min=0,
+                                        max=200,
+                                        step=1,
+                                        marks={
+                                            0: '0',
+                                            50: '50',
+                                            100: '100',
+                                            150: '150',
+                                            200: '200',
+                                        },
+                                        value=50,
+                                        persistence=True,
+                                    )
+                                ]) for _, n in Strategies.items()
+                            ],),
+                        ]),
+                        html.Div(className="rewards", children=[
+                            html.H3(
+                                children='Regulating Rewards'),
+                            html.Table(children=[
+                                html.Thead(children=[
+                                    html.Tr(children=[html.Td(""), html.Td(
+                                        "Cooperate"), html.Td("Defection")])
+                                ]),
+                                html.Tbody(children=[
+                                    html.Tr(children=[html.Td("Cooperate"), html.Td(
+                                        "R, R"), html.Td("S, T")]),
+                                    html.Tr(children=[html.Td("Defection"), html.Td(
+                                        "T, S"), html.Td("P, P")])
+                                ])
+                            ]),
+                            html.Div(className="rewardSlider", children=[
+                                html.P(children="T"),
                                 dcc.Slider(
-                                    id={'role': 'strategy_slider', 'index': _},
-                                    min=0,
-                                    max=200,
+                                    id="slider-T",
+                                    min=1,
+                                    max=40,
+
                                     step=1,
                                     marks={
-                                        0: '0',
-                                        50: '50',
-                                        100: '100',
-                                        150: '150',
-                                        200: '200',
+                                        1: '1',
+                                        10: '10',
+                                        20: '20',
+                                        30: '30',
+                                        40: '40',
                                     },
-                                    value=50,
+                                    value=30,
                                     persistence=True,
-                                )
-                            ]) for _, n in Strategies.items()
-                        ],),
-                    ]),
-                    html.Div(className="rewards", children=[
-                        html.H3(
-                            children='Regulating Rewards'),
-                        html.Table(children=[
-                            html.Thead(children=[
-                                html.Tr(children=[html.Td(""), html.Td(
-                                    "Cooperate"), html.Td("Defection")])
-                            ]),
-                            html.Tbody(children=[
-                                html.Tr(children=[html.Td("Cooperate"), html.Td(
-                                    "R, R"), html.Td("S, T")]),
-                                html.Tr(children=[html.Td("Defection"), html.Td(
-                                    "T, S"), html.Td("P, P")])
-                            ])
-                        ]),
-                        html.Div(className="rewardSlider", children=[
-                            html.P(children="T"),
-                            dcc.Slider(
-                                id="slider-T",
-                                min=1,
-                                max=40,
+                                ),
+                                html.P(children="R"),
+                                dcc.Slider(
+                                    id="slider-R",
+                                    min=1,
+                                    max=40,
+                                    step=1,
+                                    marks={
+                                        1: '1',
+                                        10: '10',
+                                        20: '20',
+                                        30: '30',
+                                        40: '40',
+                                    },
+                                    value=20,
+                                    persistence=True,
+                                ),
 
-                                step=1,
-                                marks={
-                                    1: '1',
-                                    10: '10',
-                                    20: '20',
-                                    30: '30',
-                                    40: '40',
-                                },
-                                value=30,
-                                persistence=True,
-                            ),
-                            html.P(children="R"),
-                            dcc.Slider(
-                                id="slider-R",
-                                min=1,
-                                max=40,
-                                step=1,
-                                marks={
-                                    1: '1',
-                                    10: '10',
-                                    20: '20',
-                                    30: '30',
-                                    40: '40',
-                                },
-                                value=20,
-                                persistence=True,
-                            ),
-
-                            html.P(children="P"),
-                            dcc.Slider(
-                                id="slider-P",
-                                min=1,
-                                max=40,
-                                step=1,
-                                marks={
-                                    1: '1',
-                                    10: '10',
-                                    20: '20',
-                                    30: '30',
-                                    40: '40',
-                                },
-                                value=10,
-                                persistence=True,
-                            ),
-                            html.P(children="S"),
-                            dcc.Slider(
-                                id="slider-S",
-                                min=1,
-                                max=40,
-                                step=1,
-                                marks={
-                                    1: '1',
-                                    10: '10',
-                                    20: '20',
-                                    30: '30',
-                                    40: '40'
-                                },
-                                value=5,
-                                persistence=True,
-                            )]),
+                                html.P(children="P"),
+                                dcc.Slider(
+                                    id="slider-P",
+                                    min=1,
+                                    max=40,
+                                    step=1,
+                                    marks={
+                                        1: '1',
+                                        10: '10',
+                                        20: '20',
+                                        30: '30',
+                                        40: '40',
+                                    },
+                                    value=10,
+                                    persistence=True,
+                                ),
+                                html.P(children="S"),
+                                dcc.Slider(
+                                    id="slider-S",
+                                    min=1,
+                                    max=40,
+                                    step=1,
+                                    marks={
+                                        1: '1',
+                                        10: '10',
+                                        20: '20',
+                                        30: '30',
+                                        40: '40'
+                                    },
+                                    value=5,
+                                    persistence=True,
+                                )]),
+                        ])
                     ]),
                     html.Div(className="simulationSliders", children=[
-                        dcc.Input(
-                            id="grid_x",
-                            type="number",
-                            value=100,
-                            placeholder="Width of Field"
-                        ),
-                        dcc.Input(
-                            id="grid_y",
-                            type="number",
-                            value=100,
-                            placeholder="Height of Field"
-                        ),
-                        dcc.Input(
-                            id="play_window",
-                            type="number",
-                            value=50,
-                            placeholder="Window play size"
-                        ),
-                        dcc.Input(
-                            id="travel_window",
-                            type="number",
-                            value=20,
-                            placeholder="Window in which agents travel"
-                        ),
-                        dcc.Input(
-                            id="rand_seed",
-                            type="number",
-                            value=12345,
-                            placeholder="Random Seed"
-                        ),
-                        dcc.Input(
-                            id="imit_prob",
-                            type="number",
-                            value=0.2,
-                            placeholder="Imitation probability",
-                            min=0, max=1, step=0.1
-                        ),
-                        dcc.Input(
-                            id="migrate_prob",
-                            type="number",
-                            placeholder="Migration probability",
-                            value=0.1,
-                            min=0, max=1, step=0.1
-                        ),
-                        dcc.Input(
-                            id="step_size",
-                            type="number",
-                            placeholder="Step Size",
-                            value=1,
-                            min=1, max=100, step=1
-                        ),
-                        dcc.Input(
-                            id="omega",
-                            type="number",
-                            placeholder="Omega probability",
-                            value=0.9,
-                            min=0, max=1, step=0.1
-                        )
+                        html.Div(children=[
+                            html.Label("Width of Field"),
+                            dcc.Input(
+                                id="grid_x",
+                                type="number",
+                                value=20
+                            )]),
+                        html.Div(children=[
+                            html.Label("Height of Field"),
+                            dcc.Input(
+                                id="grid_y",
+                                type="number",
+                                value=20,
+                            )]),
+                        html.Div(children=[
+                            html.Label("Window play size"),
+                            dcc.Input(
+                                id="play_window",
+                                type="number",
+                                value=1,
+                            ), ]),
+
+                        html.Div(children=[
+                            html.Label("Migration range"),
+                            dcc.Input(
+                                id="travel_window",
+                                type="number",
+                                value=3,
+                            ), ]),
+
+                        html.Div(children=[
+                            html.Label("Random Seed"),
+                            dcc.Input(
+                                id="rand_seed",
+                                type="number",
+                                value=12345,
+                                placeholder="Random Seed"
+                            ), ]),
+
+                        html.Div(children=[
+                            html.Label("Imitation probability"),
+                            dcc.Input(
+                                id="imit_prob",
+                                type="number",
+                                value=0.2,
+                                min=0, max=1, step=0.1
+                            )]),
+
+                        html.Div(children=[
+                            html.Label("Migration probability"),
+                            dcc.Input(
+                                id="migrate_prob",
+                                type="number",
+                                value=0.1,
+                                min=0, max=1, step=0.1
+                            )]),
+                        html.Div(children=[
+                            html.Label("Step Size"),
+                            dcc.Input(
+                                id="step_size",
+                                type="number",
+
+                                value=1,
+                                min=1, max=100, step=1
+                            ), ]),
+
+                        html.Div(children=[
+                            html.Label("Omega probability"),
+                            dcc.Input(
+                                id="omega",
+                                type="number",
+                                value=0.9,
+                                min=0, max=1, step=0.1
+                            )]),
                     ])
                 ]),
                 html.Div(className="simulation", children=[
-                    html.Div(className="controlbuttons", children=[
-                        html.Button('Start', id='start', n_clicks=0),
-                        html.Button(
-                            'Pause', id='toggle', n_clicks=0),
-                        html.Button('Reset', id='stop', n_clicks=0)
-                    ]),
+
+                    dcc.Dropdown(
+                        id='colorscale',
+                        options=[{"value": x, "label": x}
+                                 for x in colorscales],
+                        value='viridis',
+                        style={"display": "none"}
+                    ),
+                    html.H2("Simulation"),
                     html.Div(className="game", children=[
-                        dcc.Dropdown(
-                            id='colorscale',
-                            options=[{"value": x, "label": x}
-                                     for x in colorscales],
-                            value='viridis',
-                            style={"display": "none"}
-                        ),
-                        dcc.Graph(id='play-graph', figure=fig),
-                        dcc.Interval(id='interval-component', interval=100,  # in milliseconds
-                                     n_intervals=0),
-                        html.Div(id='results-1',
-                                 children='Summary will be displayed here'),
-                    ])
+                        html.Div(children=[
+                            html.Div(className="controlbuttons", children=[
+                                html.Button('Start', id='start', n_clicks=0),
+                                html.Button(
+                                    'Pause', id='toggle', n_clicks=0),
+                                html.Button('Reset', id='stop', n_clicks=0)
+                            ]),
+                            dcc.Graph(id='play-graph', figure=fig),
+                            dcc.Interval(id='interval-component', interval=100,  # in milliseconds
+                                         n_intervals=0)]),
+                        html.Div(children=[
+                            html.Div(className="timeline",
+                                     children="Timeline"),
+
+                            html.Div(className="plots", children="Plots")
+                        ])
+                    ]),
+                    html.Div(id='results-1',
+                             children='Summary will be displayed here'),
                 ]),
             ]),
     ])
