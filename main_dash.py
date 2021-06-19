@@ -312,10 +312,10 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
         #print(f"WTF Hash: {pot_res['grid']}")
         return fig
     except Empty:
-        fig = px.imshow([[1, 20, 30],
-                 [20, 1, 60],
-                 [30, 60, 1]])
-        return fig
+        #fig = px.imshow([[1, 20, 30],
+        #         [20, 1, 60],
+        #         [30, 60, 1]])
+        return dash.no_update
 
 
 @ app.callback(
