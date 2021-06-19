@@ -29,8 +29,8 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 
-Strategies = {'Random': 1, 'Defect': 2, 'Cooperate': 3,
-              'GrimmTrigger': 4, 'TFT': 5, 'TFTD': 6, 'TF2T': 7}
+Strategies = {'RANDOM': 1, 'DEFECT': 2, 'COOPERATE': 3,
+              'GT': 4, 'TFT': 5, 'TFTD': 6, 'TF2T': 7}
 fig = go.Figure()
 colorscales = px.colors.named_colorscales()
 
@@ -173,31 +173,37 @@ app.layout = html.Div(
                         dcc.Input(
                             id="grid_x",
                             type="number",
+                            value=100,
                             placeholder="Width of Field"
                         ),
                         dcc.Input(
                             id="grid_y",
                             type="number",
+                            value=100,
                             placeholder="Height of Field"
                         ),
                         dcc.Input(
                             id="play_window",
                             type="number",
+                            value=50,
                             placeholder="Window play size"
                         ),
                         dcc.Input(
                             id="travel_window",
                             type="number",
+                            value=20,
                             placeholder="Window in which agents travel"
                         ),
                         dcc.Input(
                             id="rand_seed",
                             type="number",
+                            value=12345,
                             placeholder="Random Seed"
                         ),
                         dcc.Input(
                             id="imit_prob",
                             type="number",
+                            value=0.2,
                             placeholder="Imitation probability",
                             min=0, max=1, step=0.1
                         ),
@@ -205,18 +211,21 @@ app.layout = html.Div(
                             id="migrate_prob",
                             type="number",
                             placeholder="Migration probability",
+                            value=0.1,
                             min=0, max=1, step=0.1
                         ),
                         dcc.Input(
                             id="step_size",
                             type="number",
                             placeholder="Step Size",
+                            value=1,
                             min=1, max=100, step=1
                         ),
                         dcc.Input(
                             id="omega",
                             type="number",
                             placeholder="Omega probability",
+                            value=0.9,
                             min=0, max=1, step=0.1
                         )
                     ])
