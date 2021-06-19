@@ -248,8 +248,8 @@ app.layout = html.Div(
                             )]),
                     ])
                 ]),
+                
                 html.Div(className="simulation", children=[
-
                     dcc.Dropdown(
                         id='colorscale',
                         options=[{"value": x, "label": x}
@@ -298,7 +298,8 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
     # inputs = [val_T, val_R, val_P, val_S] + list(args[0])       # This excludes any inputs not regulated through sliders but we can change this later if needed
 
     try:
-        pot_res = res_queue.get(False)   # Blocking get
+        pot_res = res_queue.get(False)   # Non-Blocking get
+            
         print(f"Update: {pot_res['epoch']}")
         fig = go.Figure(data=go.Heatmap(
             name=f"Epoch: {pot_res['epoch']}",
@@ -306,11 +307,15 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
             xgap=1.5,
             ygap=1.5,
             hoverongaps=False))
-        fig.update_layout(width=600, height=600,
-                          title=f"Epoch: {pot_res['epoch']}")
+        fig.update_layout(width=800, height=800, title=f"Epoch: {pot_res['epoch']}")
+        #print("what")
+        #print(f"WTF Hash: {pot_res['grid']}")
         return fig
     except Empty:
-        return dash.no_update
+        fig = px.imshow([[1, 20, 30],
+                 [20, 1, 60],
+                 [30, 60, 1]])
+        return fig
 
 
 @ app.callback(

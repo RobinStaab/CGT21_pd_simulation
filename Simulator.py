@@ -26,6 +26,8 @@ class Simulator:
             P (float): P value
             rand_seed (int, optional): Random Seed. Defaults to 42.
         """
+
+        
         # Fix seeds
         seed(rand_seed)
         np.random.seed(rand_seed)
@@ -65,7 +67,7 @@ class Simulator:
         select_locs = sample(loc_idcs, num_players)
         
         self.players = []      
-
+        
         for idx, p_cfg in enumerate(players):
             p_id = idx + 1  # We use this one-time offset to get player ids starting at 1. This allows to use 0 as an empty cell
             player = Player(p_id, p_cfg["class"], select_locs[idx], 0, p_cfg["play_window"], p_cfg["migrate_window"], 
@@ -79,7 +81,7 @@ class Simulator:
         # Setup policies
         self.migration_order_policy = lambda x: x   # Identity migration
 
-        #print("Created Simulator")
+        print("Created Simulator")
 
     def _update_location(self, take: int, loc, id: int = None):
         """ Updates a location on the grid based on whether it is taken or not.

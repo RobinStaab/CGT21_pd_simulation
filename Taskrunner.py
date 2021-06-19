@@ -31,6 +31,7 @@ class SimulatorProcess(mp.Process):
                     self.strats = next_task.msg_content['strategies']
                     self.step_size =next_task.msg_content['step-size']
                     # Reset the simulation here
+                    # print("WTF")
                     player_cfgs = generate_simple_players( next_task.msg_content['strategies'],
                                                     next_task.msg_content['counts'],
                                                     next_task.msg_content['play_window'],
@@ -38,6 +39,7 @@ class SimulatorProcess(mp.Process):
                                                     next_task.msg_content['imit_prob'],
                                                     next_task.msg_content['migrate_prob'],
                                                     next_task.msg_content['omega'])
+                    # print("WTF")
                     sim = Simulator(next_task.msg_content['grid_x'],
                                     next_task.msg_content['grid_y'],
                                     next_task.msg_content['num_players'],
@@ -49,7 +51,7 @@ class SimulatorProcess(mp.Process):
                                     next_task.msg_content['S'], 
                                     next_task.msg_content['P'],
                                     next_task.msg_content['rand_seed'])
-
+                    
                     history = []
                     state = 1
 
@@ -81,6 +83,9 @@ class SimulatorProcess(mp.Process):
             except Empty:   # Might just sleep on empty queue
                 time.sleep(0.25)
                 pass
+            except AssertionError:
+                sim = None
+                state = 0
             
             try:
                 if sim is not None and state == 1:
@@ -112,6 +117,7 @@ class SimulatorProcess(mp.Process):
                     self.result_queue.put(answer, False)
                     print(f"Continue runner {time.time()-start_t}")
             except Exception:   # Simply reset
+                print("Broken")
                 sim = None
                 state = 0
 
