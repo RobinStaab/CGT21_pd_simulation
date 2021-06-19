@@ -47,7 +47,8 @@ class SimulatorProcess(mp.Process):
                                     next_task.msg_content['T'],
                                     next_task.msg_content['R'],
                                     next_task.msg_content['S'], 
-                                    next_task.msg_content['P'])
+                                    next_task.msg_content['P'],
+                                    next_task.msg_content['rand_seed'])
 
                     history = []
                     state = 1
@@ -77,37 +78,42 @@ class SimulatorProcess(mp.Process):
                     else:
                         print(f"Nothing to continue")
 
-            except Empty:
+            except Empty:   # Might just sleep on empty queue
                 time.sleep(0.25)
                 pass
-
             
-            if sim is not None and state == 1:
-                start_t = time.time()
-                sim.simulate(self.step_size)
-                
-                #print(f"Done with step: {time.time()-start_t} - Epoch: {sim.total_epoch}")
-                start_t = time.time()
+            try:
+                if sim is not None and state == 1:
+                    start_t = time.time()
 
-                # Prepare the ouput 
-                def my_map(x):
-                    if x == 0:
-                        return x
-                    else:
-                        return self.strats.index(sim.players[int(x)-1].strategy.name)+1
+                    print(f"Starting step:")
+                    sim.simulate(self.step_size)
+                    
+                    print(f"Done with step: {time.time()-start_t} - Epoch: {sim.total_epoch}")
+                    start_t = time.time()
 
-                print(f"Counted players {len(np.nonzero(np.vectorize(my_map)(sim.grid))[0])}")
+                    # Prepare the ouput 
+                    def my_map(x):
+                        if x == 0:
+                            return x
+                        else:
+                            return self.strats.index(sim.players[int(x)-1].strategy.name)+1
+
+                    print(f"Counted players {len(np.nonzero(np.vectorize(my_map)(sim.grid))[0])}")
 
 
-                answer = { 'epoch': sim.total_epoch,
-                           'grid' : np.vectorize(my_map)(sim.grid),
-                           'state': sim.get_state()
-                        }     # TODO compute full output state at this point
+                    answer = { 'epoch': sim.total_epoch,
+                            'grid' : np.vectorize(my_map)(sim.grid),
+                            'state': sim.get_state()
+                            }     # TODO compute full output state at this point
 
-                history.append(answer)
-                #print(f"Queue is full: {self.result_queue.full()}")
-                self.result_queue.put(answer, False)
-                print(f"Continue runner {time.time()-start_t}")
+                    history.append(answer)
+                    #print(f"Queue is full: {self.result_queue.full()}")
+                    self.result_queue.put(answer, False)
+                    print(f"Continue runner {time.time()-start_t}")
+            except Exception:   # Simply reset
+                sim = None
+                state = 0
 
 
 class ProcessMsg:

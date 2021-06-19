@@ -246,7 +246,7 @@ app.layout = html.Div(
                             style={"display": "none"}
                         ),
                         dcc.Graph(id='play-graph', figure=fig),
-                        dcc.Interval(id='interval-component', interval=100,  # in milliseconds
+                        dcc.Interval(id='interval-component', interval=200,  # in milliseconds
                                      n_intervals=0),
                         html.Div(id='results-1',
                                  children='Summary will be displayed here'),
@@ -272,7 +272,7 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
 
     try:
         pot_res = res_queue.get(False)   # Blocking get
-        print("Update")
+        print(f"Update: {pot_res['epoch']}")
         fig = go.Figure(data=go.Heatmap(
             name=f"Epoch: {pot_res['epoch']}",
             z=pot_res["grid"],
@@ -283,15 +283,6 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
                           title=f"Epoch: {pot_res['epoch']}")
         return fig
     except Empty:
-        """fig = go.Figure(data=go.Heatmap(
-                    name= "Hello2",
-                    z=[[1, 20, 30],
-                      [20, 1, 60],
-                      [30, 60, 1]],
-                    xgap=1.5,
-                    ygap=1.5,
-                    hoverongaps = False))
-        fig.update_layout(width=600, height=600, title=str(time.time()))"""
         return dash.no_update
 
 
@@ -314,7 +305,7 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
      # NOTE Please append all fixed features before here so that we can use *args for the strategies
      State({'role': 'strategy_slider', 'index': ALL}, 'value')],
     prevent_initial_call=True)
-def start_sim(clicks, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S: int = 1, grid_x: int = 40, grid_y: int = 40, play_window: int = 1, travel_window: int = 3, imit_prob: float = 0.8, migrate_prob: float = 0.8, omega: float = 0.9, rand_seed: int = 42, step_size: int = 42,  *args: tuple):
+def start_sim(clicks, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S: int = 1, grid_x: int = 40, grid_y: int = 40, play_window: int = 1, travel_window: int = 3, imit_prob: float = 0.8, migrate_prob: float = 0.8, omega: float = 0.9, step_size: int = 42, rand_seed: int = 42,  *args: tuple):
 
     print("Started Simulation")
 
@@ -339,7 +330,8 @@ def start_sim(clicks, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S: int
         'migrate_prob': migrate_prob,
         'omega': omega,
         'epochs': 10,
-        'step-size': step_size
+        'step-size': step_size,
+        'rand_seed': rand_seed
     }
 
     task_queue.put(ProcessMsg("RESTART", msg_content=msg_dict))
