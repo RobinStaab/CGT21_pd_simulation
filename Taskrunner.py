@@ -4,7 +4,7 @@ import numpy as np
 from queue import Empty
 import time
 from Simulator import Simulator
-from test_simulator import generate_players
+from test_simulator import generate_simple_players
 
 class SimulatorProcess(mp.Process):
 
@@ -31,7 +31,7 @@ class SimulatorProcess(mp.Process):
                     self.strats = next_task.msg_content['strategies']
                     self.step_size =next_task.msg_content['step-size']
                     # Reset the simulation here
-                    player_cfgs = generate_players( next_task.msg_content['strategies'],
+                    player_cfgs = generate_simple_players( next_task.msg_content['strategies'],
                                                     next_task.msg_content['counts'],
                                                     next_task.msg_content['play_window'],
                                                     next_task.msg_content['migrate_window'],

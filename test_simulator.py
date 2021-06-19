@@ -6,49 +6,51 @@ import time
 from analysis import *
 
 
-def generate_players(strategies: List[str], amount: List[int], play_window: int, migrate_window: int, imit_prob: float, migrate_prob: float, omega: float):
+def generate_player(strategy: Strategy, player_class: str, play_window: int, migrate_window: int, imit_prob: float, migrate_prob: float, omega: float):
+    strategy_obj = None
+    if strategy == "RANDOM":
+        strategy_obj = RANDOM(0.5)
+    elif strategy == "DEFECT":
+        strategy_obj = DEFECT()
+    elif strategy == "COOPERATE":
+        strategy_obj = COOPERATE()
+    elif strategy == "GT":
+        strategy_obj = GT()
+    elif strategy == "TFT":
+        strategy_obj = TFT()
+    elif strategy == "TFTD":
+        strategy_obj = TFTD()
+    elif strategy == "TF2T":
+        strategy_obj = TF2T()
+    elif strategy == "GTFT":
+        strategy_obj = GTFT()
+    elif strategy == "ImpTFT":
+        strategy_obj = ImpTFT()
+    elif strategy == "TTFT":
+        strategy_obj = TTFT()
+    elif strategy == "EARTHERLY":
+        strategy_obj = EARTHERLY()
+    elif strategy == "CHAMPION":
+        strategy_obj = CHAMPION()
+    else:
+        assert False, "Unkown strategy type"
+    
+    return {
+        "class": player_class,
+        "play_window": play_window,
+        "migrate_window": migrate_window,
+        "imit_prob": imit_prob,
+        "migrate_prob": migrate_prob,
+        "strategy": strategy_obj,
+        "omega": omega
+    }
+
+def generate_simple_players(strategies: List[str], amount: List[int], play_window: int, migrate_window: int, imit_prob: float, migrate_prob: float, omega: float):
     player_cfgs = []
-
     assert len(strategies) == len(amount)
-
     for amount, strategy in zip(amount, strategies):
         for i in range(amount):
-            strategy_obj = None
-            if strategy == "RANDOM":
-                strategy_obj = RANDOM(0.5)
-            elif strategy == "DEFECT":
-                strategy_obj = DEFECT()
-            elif strategy == "COOPERATE":
-                strategy_obj = COOPERATE()
-            elif strategy == "GT":
-                strategy_obj = GT()
-            elif strategy == "TFT":
-                strategy_obj = TFT()
-            elif strategy == "TFTD":
-                strategy_obj = TFTD()
-            elif strategy == "TF2T":
-                strategy_obj = TF2T()
-            elif strategy == "GTFT":
-                strategy_obj = GTFT()
-            elif strategy == "ImpTFT":
-                strategy_obj = ImpTFT()
-            elif strategy == "TTFT":
-                strategy_obj = TTFT()
-            elif strategy == "EARTHERLY":
-                strategy_obj = EARTHERLY()
-            elif strategy == "CHAMPION":
-                strategy_obj = CHAMPION()
-            else:
-                assert False, "Unkown strategy type"
-            
-            player_cfgs.append({
-                "play_window": play_window,
-                "migrate_window": migrate_window,
-                "imit_prob": imit_prob,
-                "migrate_prob": migrate_prob,
-                "strategy": strategy_obj,
-                "omega": omega
-            })
+            player_cfgs.append(generate_player(strategy, strategy, play_window, migrate_window, imit_prob, migrate_prob, omega))
 
     return player_cfgs
 
@@ -73,7 +75,7 @@ if __name__ == "__main__":
     # player_cfgs = generate_players(["GTFT","ImpTFT","TTFT","EARTHERLY","CHAMPION"], 
     #                                 [40, 10, 10, 20, 20], play_window, migrate_window, imit_prob, migrate_prob, omega)
     
-    player_cfgs = generate_players(["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"], 
+    player_cfgs = generate_simple_players(["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"], 
                                     [30, 10, 10, 10, 10, 10, 10], play_window, migrate_window, imit_prob, migrate_prob, omega)
 
     sim = Simulator(grid_x, grid_y, num_players, play_window, migrate_window, player_cfgs, T, R, S, P)
@@ -86,7 +88,7 @@ if __name__ == "__main__":
         t3 = class_vs_class_over_time(sim.get_state(), ["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"] )
         t4 = payoff_per_class_over_time(sim.get_state(), ["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"] )
         t5 = percentage_of_optimum(sim.get_state(), ["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"] )
-        t2 = class_distribution_over_time(sim.get_flat_mapped_grid(), ["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"] )
+        #t2 = class_distribution_over_time(sim.get_flat_mapped_grid(), ["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"] )
         #t6 = class_change_over_time
         print(f"Time: {(time.time() - start_time)}")
 

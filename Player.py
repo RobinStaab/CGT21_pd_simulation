@@ -6,7 +6,7 @@ from Game_data import Game_data
 
 class Player:
 
-    def __init__(self, id: int, loc, init_util: float, 
+    def __init__(self, id: int, player_class: str, loc, init_util: float, 
                     play_window: int, migrate_window: int, 
                     imit_prob: float, migrate_prob: float,
                     sim_state, strategy: Strategy, omega:float) -> None:
@@ -14,6 +14,7 @@ class Player:
 
         Args:
             id (int): Unique identifier of the player
+            class (str): class name of players with same start parameters
             loc ([type]): Current location of the player on the game grid
             init_util (float): Initial utility that the player has
             play_window (int): Size of the 2-D window in which the player plays against other players - For performance we should keep this equal in all cases
@@ -24,8 +25,9 @@ class Player:
             strategy (Strategy): Strategy that this player follows
             omega (float): Shadow of the future
         """
-        self.id     = id
-        self.loc    = loc
+        self.id             = id
+        self.player_class   = player_class
+        self.loc            = loc
         self.total_util     = init_util
         self.play_window    = play_window
         self.migrate_window = migrate_window
@@ -105,17 +107,19 @@ class Player:
         """
         self.latest_util = 0
 
-    def add_to_history(self, epoch, opponent_id, player_decision, opponent_decision, player_strategy, other_strategy, opponent_util, data_dict):
+    def add_to_history(self, epoch, opponent_id, other_class, player_decision, opponent_decision, player_strategy, other_strategy, player_util, opponent_util, data_dict):
         """Player adds game to history
         
             Args:
             epoch (int)             : epoch of the game
             other_id (int)          : id of the opponent
+            other_class (str)       : class of the opponent
             player_decision (0/1)   : decision of the player
             other_decision (0/1)    : decision of the opponent
             player_strategy         : strategy the player is currently following
             other_strategy          : strategy the other player is currently following
+            player_util (float)     : utility of the player 
             other_util (float)      : utility of the opponent
             data_dict               : additional data dictionary
         """
-        self.history.add_game(Game_data(epoch, self.id, opponent_id, player_decision, opponent_decision, player_strategy, other_strategy, self.latest_util, opponent_util, data_dict))
+        self.history.add_game(Game_data(epoch, self.id, opponent_id, self.player_class, other_class, player_decision, opponent_decision, player_strategy, other_strategy, player_util, opponent_util, data_dict))
