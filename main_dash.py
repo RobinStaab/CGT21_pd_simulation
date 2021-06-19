@@ -322,7 +322,7 @@ def stop_sim(*args):
     Output('local_toggle', 'data'),
     [Input('toggle', 'n_clicks')],
      prevent_initial_call=True)
-def stop_sim(*args):
+def toggle_sim(*args):
     print("Toggled Simulation")
     task_queue.put(ProcessMsg("TOGGLE", msg_content=None))
     return 1
