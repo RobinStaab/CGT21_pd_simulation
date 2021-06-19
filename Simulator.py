@@ -223,8 +223,8 @@ class Simulator:
                     games_played += 1
 
                     #add to histories
-                    player_one.add_to_history(epoch, player_two.id, player_two.player_class, p1_dec, p2_dec, player_one.strategy.name, player_two.strategy.name, player_two.latest_util, {})
-                    player_two.add_to_history(epoch, player_one.id, player_one.player_class, p2_dec, p1_dec, player_two.strategy.name, player_one.strategy.name, player_one.latest_util, {})
+                    player_one.add_to_history(epoch, player_two.id, player_two.player_class, p1_dec, p2_dec, player_one.strategy.name, player_two.strategy.name, p1_util, p2_util, {})
+                    player_two.add_to_history(epoch, player_one.id, player_one.player_class, p2_dec, p1_dec, player_two.strategy.name, player_one.strategy.name, p2_util, p1_util, {})
 
         
         #print(f"Total games: {games_played}")
