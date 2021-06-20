@@ -53,14 +53,13 @@ class Simulator:
 
         # Setup the payoff matrices
         # Format
+        #
         #       p2
-        #       D    C
-        # p1 D  P,P  T,S
-        #    C  S,T  R,R
-        #
-        #
-        self.p1_matrix = np.matrix([[P,T],[S,R]])
-        self.p2_matrix = np.matrix([[P,S],[T,R]])
+        #       C    D
+        # p1 C  R,R  S,T
+        #    D  T,S  P,P
+        self.p1_matrix = np.matrix([[R,S],[T,P]])
+        self.p2_matrix = np.matrix([[R,T],[S,P]])
 
         # Get & Select the locations
         loc_idcs = [ (i,j) for i in range(grid_x) for j in range(grid_y)]   # Equally performant as Cartesian product

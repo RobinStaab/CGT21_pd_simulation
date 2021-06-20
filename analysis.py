@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import pandas as pd
 
 
 def r_up(val, base):
@@ -40,7 +41,9 @@ def defection_per_class_over_time(history, classes, min_epoch=-1, max_epoch=-1, 
     for player in history.values():
         defection_map(summary_dict, player)
 
-    return summary_dict
+    # Here the dict is complete
+
+    return summary_dict, pd.DataFrame.from_dict({(i,j): summary_dict[i][j] for i in summary_dict.keys() for j in summary_dict[i].keys()}, orient='index')
 
 def class_distribution_over_time(graph_history, classes, min_epoch=-1, max_epoch=-1, agg_step=1):
 
@@ -91,6 +94,8 @@ def class_vs_class_over_time(history, classes, agg_step=1):
     for player in history.values():
         c_vs_c_map(summary_dict, player)
 
+    #df = pd.DataFrame.from_dict({((i,j),k): summary_dict[i][j][k] for i in summary_dict.keys() for j in summary_dict[i].keys() for k in summary_dict[i][j].keys()}, orient='index')
+
     return summary_dict
 
 def payoff_per_class_over_time(history, classes, agg_step=1):
@@ -128,7 +133,9 @@ def payoff_per_class_over_time(history, classes, agg_step=1):
     for player in history.values():
         poc_map(summary_dict, player)
 
-    return summary_dict
+    df = pd.DataFrame.from_dict({(i,j): summary_dict[i][j] for i in summary_dict.keys() for j in summary_dict[i].keys()}, orient='index')
+
+    return summary_dict, df
 
 def percentage_of_optimum(history, classes, agg_step=1):
     """ Returns the percentage of the peak overall utility that we could have achieved
@@ -146,11 +153,11 @@ def percentage_of_optimum(history, classes, agg_step=1):
                 for game in encounter:
                     act_epoch = r_up(game.epoch, agg_step)
                     if d.get(act_epoch) == None:
-                        d[act_epoch] = { 'achieved': 0,
+                        d[act_epoch] = { 'pay_off': 0,
                                         'num_of_matches': 0 }
 
                     # TODO FIX for the correct util
-                    d[act_epoch]['achieved'] += game.player_util
+                    d[act_epoch]['pay_off'] += game.player_util
                     d[act_epoch]['num_of_matches'] += 1
 
                     d['total']['pay_off'] += game.player_util
@@ -165,7 +172,9 @@ def percentage_of_optimum(history, classes, agg_step=1):
     for player in history.values():
         poo_map(summary_dict, player)
 
-    return summary_dict
+    df = pd.DataFrame.from_dict(summary_dict, orient='index')
+
+    return summary_dict, df
 
 def class_change_over_time(history, classes, agg_step=1):
     raise NotImplementedError

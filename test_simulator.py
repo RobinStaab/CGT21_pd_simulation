@@ -4,6 +4,7 @@ from Player import Player
 from Strategies import *
 import time
 from analysis import *
+import pandas as pd
 
 
 def generate_player(strategy: Strategy, player_class: str, play_window: int, migrate_window: int, imit_prob: float, migrate_prob: float, omega: float):
@@ -60,10 +61,10 @@ def generate_simple_players(strategies: List[str], amount: List[int], play_windo
 if __name__ == "__main__":
 
     # T > R > P > S
-    T = 1.5
-    R = 1
+    T = 1.7
+    R = 1.5
     S = 0.5
-    P = 0.8
+    P = 0.5
     grid_x = 10
     grid_y = 10
     num_players = 100
@@ -86,17 +87,17 @@ if __name__ == "__main__":
     for i in range(10):
         start_time = time.time()
         sim.simulate(epochs, visualize=False)
-        t = defection_per_class_over_time(
-            sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"])
-        t3 = class_vs_class_over_time(
-            sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"])
-        t4 = payoff_per_class_over_time(
-            sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"])
-        t5 = percentage_of_optimum(
-            sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"])
+        t, df_dpcot = defection_per_class_over_time(sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"])
+
+        # TODO requires grid history in the simulator
         #t2 = class_distribution_over_time(sim.get_flat_mapped_grid(), ["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"] )
+
+        t3 = class_vs_class_over_time(sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"])
+        t4, df_ppcot = payoff_per_class_over_time(sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"])
+        t5 = percentage_of_optimum(sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"])
+        
         #t6 = class_change_over_time
         print(f"Time: {(time.time() - start_time)}")
-
+        pd 
     print(
         f"Total Time for {epochs} epochs, {num_players} players and grid-size {grid_x} x {grid_y}: {(time.time() - start_time)}")

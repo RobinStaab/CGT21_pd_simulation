@@ -19,7 +19,7 @@ class Strategy(object):
             player_two (Player) two object
             game_config (Dict): Dictionary containing the base setting values for the game - to be used by iterated policies
         Returns:
-            int: decision, 1 if we defect 0 if we cooperate
+            int: decision, 0 if we cooperate 1 if we defect 
             int: value, For iterated policies we return the payoff directly
         """
         pass
