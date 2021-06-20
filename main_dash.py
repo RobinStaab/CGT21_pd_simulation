@@ -31,7 +31,10 @@ server = app.server
 
 Strategies = {'RANDOM': 1, 'DEFECT': 2, 'COOPERATE': 3,
               'GT': 4, 'TFT': 5, 'TFTD': 6, 'TF2T': 7}
+
 fig = go.Figure()
+poo_plot = go.Figure()
+
 colorscales = px.colors.named_colorscales()
 
 task_queue = None
@@ -272,7 +275,9 @@ app.layout = html.Div(
                             html.Div(className="timeline",
                                      children="Timeline"),
 
-                            html.Div(className="plots", children="Plots")
+                            html.Div(className="plots", children=[
+                                dcc.Graph(id='poo-plot', figure=poo_plot),
+                            ])
                         ])
                     ]),
                     html.Div(id='results-1',
@@ -284,6 +289,7 @@ app.layout = html.Div(
 
 @ app.callback(
     Output('play-graph', 'figure'),
+    Output('poo-plot', 'figure'),
     [Input('interval-component', 'n_intervals')],
     [State("slider-T", 'value'),
      State("slider-R", 'value'),
@@ -307,7 +313,10 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
             ygap=1.5,
             hoverongaps=False))
         fig.update_layout(width=800, height=800, title=f"Epoch: {pot_res['epoch']}")
-        return fig
+
+        fig_poo = px.line(pot_res['df_poo'], y="res", title='Percentage of Optimum over time')
+
+        return fig, fig_poo
     except Empty:
         return dash.no_update
 

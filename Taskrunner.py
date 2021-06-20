@@ -5,6 +5,7 @@ from queue import Empty
 import time
 from Simulator import Simulator
 from test_simulator import generate_simple_players
+from analysis import *
 
 class SimulatorProcess(mp.Process):
 
@@ -54,6 +55,7 @@ class SimulatorProcess(mp.Process):
                     
                     history = []
                     state = 1
+                    self.T = next_task.msg_content['T']
 
                     print(f"Restarted Simulation with new CFG { next_task.msg_content['grid_x']} x { next_task.msg_content['grid_y']} - Num_players: {next_task.msg_content['num_players']}")
                 
@@ -94,7 +96,7 @@ class SimulatorProcess(mp.Process):
                     #print(f"Starting step:")
                     sim.simulate(self.step_size)
                     
-                    #print(f"Done with step: {time.time()-start_t} - Epoch: {sim.total_epoch}")
+                    print(f"Done with step: {time.time()-start_t} - Epoch: {sim.total_epoch}")
                     start_t = time.time()
 
                     # Prepare the ouput 
@@ -105,19 +107,30 @@ class SimulatorProcess(mp.Process):
                             return self.strats.index(sim.players[int(x)-1].strategy.name)+1
 
                     #print(f"Counted players {len(np.nonzero(np.vectorize(my_map)(sim.grid))[0])}")
-
+                    start_t = time.time()
+                    t1, df_dpcot, fig_dpc   = defection_per_class_over_time(sim.get_state(),    self.strats, visualize=False)
+                    t2, df_cd, fig_cd       = class_distribution_over_time(sim.map_history,     self.strats, visualize=False)
+                    t3, df_cvc, fig_cvc     = class_vs_class_over_time(sim.get_state(),         self.strats, visualize=False)
+                    t4, df_ppcot, fig_ppcot = payoff_per_class_over_time(sim.get_state(),       self.strats, visualize=False)
+                    t5, df_poo, fig_poo     = percentage_of_optimum(sim.get_state(), self.T,    self.strats, visualize=False)
+                    print(f"Done with analysis: {time.time()-start_t} - Epoch: {sim.total_epoch}")
 
                     answer = { 'epoch': sim.total_epoch,
                             'grid' : np.vectorize(my_map)(sim.grid),
-                            #'state': sim.get_state()
+                            'df_dpcot': df_dpcot,
+                            'df_cd': df_cd,
+                            'df_cvc': df_cvc,
+                            'df_ppcot': df_ppcot,
+                            'df_poo': df_poo,
+                            #'state': sim.get_state()   Kills it
                             }     # TODO compute full output state at this point
 
                     history.append(answer)
                     #print(f"Queue is full: {self.result_queue.full()}")
                     self.result_queue.put(answer, False)
                     #print(f"Continue runner {time.time()-start_t}")
-            except Exception:   # Simply reset
-                print("Broken")
+            except Exception as e:   # Simply reset
+                print(f"Broken: {e}")
                 sim = None
                 state = 0
 

@@ -58,15 +58,17 @@ def defection_per_class_over_time(history, classes, min_epoch=-1, max_epoch=-1, 
 
 
     # Here the dict is complete
-    df = pd.DataFrame.from_dict({(i,j): summary_dict[i][j] for i in summary_dict.keys() for j in summary_dict[i].keys()}, orient='index')
+    #df = pd.DataFrame.from_dict({(i,j): summary_dict[i][j] for i in summary_dict.keys() for j in summary_dict[i].keys()}, orient='index')
     dff= pd.DataFrame.from_dict(final_dict)
+
+    fig = None
     if visualize:
         df_red = dff.drop('total', axis=1).sort_index(axis=1).transpose()
 
         fig = px.line(df_red, title='Defection rate per class over time')
         #fig.show()
 
-    return summary_dict, df, fig
+    return summary_dict, dff, fig
 
 
 def class_distribution_over_time(graph_history, classes, step_size=1, visualize=False):
@@ -130,11 +132,10 @@ def class_vs_class_over_time(history, classes, agg_step=1, visualize=True):
     for player in history.values():
         c_vs_c_map(summary_dict, player)
 
-
+    df = pd.DataFrame.from_dict({(i,j): summary_dict['total'][i][j] for i in summary_dict['total'].keys() for j in summary_dict['total'][i].keys()}, orient='index')
     # Dict is done here
     fig = None
     if visualize:
-        df = pd.DataFrame.from_dict({(i,j): summary_dict['total'][i][j] for i in summary_dict['total'].keys() for j in summary_dict['total'][i].keys()}, orient='index')
         df2 = df[1] / (df[0]+df[1])
 
         plotly_dict =    {  'z': df2.values.tolist(),
@@ -196,7 +197,7 @@ def payoff_per_class_over_time(history, classes, agg_step=1, visualize=True):
                         final_dict[key][cl] = 0
 
     # Dict is done here
-    df = pd.DataFrame.from_dict({(i,j): summary_dict[i][j] for i in summary_dict.keys() for j in summary_dict[i].keys()}, orient='index')
+    #df = pd.DataFrame.from_dict({(i,j): summary_dict[i][j] for i in summary_dict.keys() for j in summary_dict[i].keys()}, orient='index')
     dff = pd.DataFrame.from_dict(final_dict)
     # Dataframe is done here
     fig = None
@@ -206,7 +207,7 @@ def payoff_per_class_over_time(history, classes, agg_step=1, visualize=True):
         fig = px.line(df_red, title='Average payoff per class over time')
         #fig.show()
 
-    return summary_dict, df, fig
+    return summary_dict, dff, fig
 
 def percentage_of_optimum(history, T, classes, agg_step=1, visualize=True):
     """ Returns the percentage of the peak overall utility that we could have achieved
@@ -247,16 +248,15 @@ def percentage_of_optimum(history, T, classes, agg_step=1, visualize=True):
     df = pd.DataFrame.from_dict(summary_dict, orient='index')
 
     # Here the df is done
-
+    df['res'] = df['pay_off']/(T * df['num_of_matches'])
+    df_red = df.drop(['total']).sort_index()
+    
     fig = None
     if visualize:
-        df['res'] = df['pay_off']/(T * df['num_of_matches'])
-        df_red = df.drop(['total']).sort_index()
-
         fig = px.line(df_red, y="res", title='Percentage of Optimum over time')
         #fig.show()
 
-    return summary_dict, df, fig
+    return summary_dict, df_red, fig
 
 def class_change_over_time(history, classes, agg_step=1):
     raise NotImplementedError
