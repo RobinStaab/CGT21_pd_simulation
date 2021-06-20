@@ -42,7 +42,8 @@ class Simulator:
         self.wrap = True
         self.use_iterated_policy = False
         self.total_epoch = 0
-        
+        self.map_history = []
+
         # We save the match-ups in a dict per player - This allows access in O(log(n)), and more importantly migration in O(log(n))
         # Match-ups are saved both ways and updated via the _update_location function
         self.match_ups = SortedDict({})
@@ -162,6 +163,7 @@ class Simulator:
             4. Letting players migrate
         """
         # TODO Nothing to reset atm
+        self.save_map(epoch)
         self.reset(epoch)
         self.play(epoch)
         self.player_comm()
@@ -287,13 +289,15 @@ class Simulator:
         
         return hist_dict
 
-    def get_flat_mapped_grid(self):
+    def save_map(self, epoch):
         # Prepare the ouput 
         def grid_map(x):
             if x == 0:
-                return x
+                return "EMPTY"
             else:
                 return self.players[int(x)-1].strategy.name
         
         list_2d = self.grid.flatten().tolist()
-        return map(grid_map, list_2d)
+        m_list = list(map(grid_map, list_2d))
+
+        self.map_history.append(m_list)

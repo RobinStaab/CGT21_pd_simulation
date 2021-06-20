@@ -5,6 +5,7 @@ from Strategies import *
 import time
 from analysis import *
 import pandas as pd
+import plotly.express as px
 
 
 def generate_player(strategy: Strategy, player_class: str, play_window: int, migrate_window: int, imit_prob: float, migrate_prob: float, omega: float):
@@ -70,8 +71,8 @@ if __name__ == "__main__":
     num_players = 100
     play_window = 1
     migrate_window = 3
-    imit_prob = 0.8
-    migrate_prob = 0.8
+    imit_prob = 0.05
+    migrate_prob = 0.1
     epochs = 100
     omega = 0.5
 
@@ -87,17 +88,15 @@ if __name__ == "__main__":
     for i in range(10):
         start_time = time.time()
         sim.simulate(epochs, visualize=False)
-        t, df_dpcot = defection_per_class_over_time(sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"])
-
+        t, df_dpcot, fig_dpc    = defection_per_class_over_time(sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"], visualize=True)
         # TODO requires grid history in the simulator
-        #t2 = class_distribution_over_time(sim.get_flat_mapped_grid(), ["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"] )
+        t2, df_cd, fig_cd   = class_distribution_over_time(sim.map_history, ["RANDOM","DEFECT","COOPERATE","GT","TFT","TFTD","TF2T"], visualize=True)
+        t3, df_cvc, fig_cvc = class_vs_class_over_time(sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"], visualize=True)
+        t4, df_ppcot, fig_ppcot = payoff_per_class_over_time(sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"], visualize=True)
+        t5, df_poo, fig_poo = percentage_of_optimum(sim.get_state(), T, ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"], visualize=True)
 
-        t3 = class_vs_class_over_time(sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"])
-        t4, df_ppcot = payoff_per_class_over_time(sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"])
-        t5 = percentage_of_optimum(sim.get_state(), ["RANDOM", "DEFECT", "COOPERATE", "GT", "TFT", "TFTD", "TF2T"])
-        
         #t6 = class_change_over_time
         print(f"Time: {(time.time() - start_time)}")
-        pd 
+         
     print(
         f"Total Time for {epochs} epochs, {num_players} players and grid-size {grid_x} x {grid_y}: {(time.time() - start_time)}")
