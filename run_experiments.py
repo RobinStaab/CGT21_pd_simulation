@@ -81,6 +81,8 @@ def convert_values(experiments):
                 exp['params'][param] = float(exp['params'][param])
             elif param in ['grid_x', 'grid_y', 'epochs', 'runs']:
                 exp['params'][param] = int(float(exp['params'][param]))
+            elif param in ['infinite']:
+                exp['params'][param] = exp['params'][param] == 'True'
             else:
                 assert False, f"Parameter {key} not implemented for experiments"
         for player in exp['players']:
@@ -129,7 +131,7 @@ def run_experiment(experiment):
     averages = []
     for r in range(nr_runs):
 
-        sim = Simulator(experiment['params']['grid_x'], experiment['params']['grid_y'], num_players, 1, 3, player_cfgs, experiment['params']['T'], experiment['params']['R'], experiment['params']['S'], experiment['params']['P'], rand_seed=randint(0,13371337))
+        sim = Simulator(experiment['params']['grid_x'], experiment['params']['grid_y'], num_players, 1, 3, player_cfgs, experiment['params']['T'], experiment['params']['R'], experiment['params']['S'], experiment['params']['P'], experiment['params']['infinite'], rand_seed=randint(0,13371337))
         sim.simulate(experiment['params']['epochs'], visualize=False)
         state = sim.get_state()
 

@@ -10,7 +10,7 @@ class Simulator:
 
     def __init__(self, grid_x: int, grid_y: int, 
                     num_players: int, play_window: int, travel_window: int, players, 
-                    T:float , R: float, S: float, P: float,  rand_seed=42) -> None:
+                    T:float , R: float, S: float, P: float, use_iterated_policy: bool=False,  rand_seed=42) -> None:
         """ Initializes the Simulator
 
         Args:
@@ -24,6 +24,7 @@ class Simulator:
             R (float): R value
             S (float): S value
             P (float): P value
+            use_iterated_policy (bool, optional): use iterated policy. Defaults to False.
             rand_seed (int, optional): Random Seed. Defaults to 42.
         """
 
@@ -40,7 +41,7 @@ class Simulator:
         self.travel_window = travel_window
         self.values = {'T': T, 'R': R, 'S': S, 'P': P}
         self.wrap = True
-        self.use_iterated_policy = False
+        self.use_iterated_policy = use_iterated_policy
         self.total_epoch = 0
         self.map_history = []
 
