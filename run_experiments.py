@@ -3,6 +3,9 @@ import test_simulator
 from Simulator import Simulator
 import os
 from tqdm.contrib.concurrent import process_map
+from analysis import *
+from random import randint, seed
+from itertools import repeat
 
 def read_file(file_name):
     experiments = []
@@ -97,7 +100,7 @@ def convert_values(experiments):
             if p_i in exp['changed_keys']:
                 for key in exp['changed_keys'][p_i]:
                     changes.append(f'{key}-{exp["players"][p_i][key]}')
-        player_changes.append(f"{p_i}:{'_'.join(changes)}")
+                player_changes.append(f"{p_i}:{'_'.join(changes)}")
         exp['name'] = exp['name'] + ''.join([f'_({change})' for change in player_changes])
 
     return experiments
@@ -108,6 +111,7 @@ def class_name(player):
 def run_experiment(experiment):
     player_cfgs = []
     classes = []
+    strategies = []
     num_players = 0
     for player in experiment['players']:
         player_class = class_name(player)
@@ -116,22 +120,73 @@ def run_experiment(experiment):
         num_players = num_players + player['nr']
         if player_class not in classes:
             classes.append(player_class)
+        if player['strat'] not in strategies:
+            strategies.append(player['strat'])
 
-    results = {''}
-    for r in range(experiment['params']['runs']):
-        sim = Simulator(experiment['params']['grid_x'], experiment['params']['grid_y'], num_players, 1, 3, player_cfgs, experiment['params']['T'], experiment['params']['R'], experiment['params']['S'], experiment['params']['P'])
+    nr_results = 5
+    nr_runs = experiment['params']['runs']
+    results = [[] for i in range(nr_results)]
+    averages = []
+    for r in range(nr_runs):
+
+        sim = Simulator(experiment['params']['grid_x'], experiment['params']['grid_y'], num_players, 1, 3, player_cfgs, experiment['params']['T'], experiment['params']['R'], experiment['params']['S'], experiment['params']['P'], rand_seed=randint(0,13371337))
         sim.simulate(experiment['params']['epochs'], visualize=False)
         state = sim.get_state()
+
+        t, df_dpc, fig_dpc = defection_per_class_over_time(sim.get_state(), strategies, visualize=False)
+        results[0].append(df_dpc)
+        t2, df_cd, fig_cd   = class_distribution_over_time(sim.map_history, strategies, visualize=False)
+        results[1].append(df_cd)
+        t3, df_cvc, fig_cvc = class_vs_class_over_time(sim.get_state(), strategies, visualize=False)
+        results[2].append(df_cvc)
+        t4, df_ppc, fig_ppcot = payoff_per_class_over_time(sim.get_state(), strategies, visualize=False)
+        results[3].append(df_ppc)
+        t5, df_poo, fig_poo = percentage_of_optimum(sim.get_state(), experiment['params']['T'], strategies, visualize=False)
+        results[4].append(df_poo)
     
+    for res in range(nr_results):
+        #print(results[res])
+        for run in range(nr_runs):
+            if run == 0:
+                sum = results[res][run]
+            else:
+                sum = sum + results[res][run]
+            
+        averages.append(sum/nr_runs)
+        #print(averages[-1])
     
     if not os.path.exists('data'):
         os.makedirs('data')
-    with open(f"data/{experiment['name']}.csv", "w") as file:
-        #Waiting for analysis rework --> no results saved yet
-        file.write("Done\n")
+    exp_dir = f"data/{experiment['name']}"
+    if not os.path.exists(exp_dir):
+        os.makedirs(exp_dir)
+
+    figs = {}
+    averages[0].to_csv(f'{exp_dir}/dpc.csv')
+    figs['dpc'] = vis_dpc(averages[0])
+    averages[1].to_csv(f'{exp_dir}/cd.csv')
+    figs['cd'] = vis_cd(averages[1])
+    averages[2].to_csv(f'{exp_dir}/cvc.csv')
+    figs['cvc'] = vis_cvc(averages[2])
+    averages[3].to_csv(f'{exp_dir}/ppc.csv')
+    figs['ppc'] = vis_ppc(averages[3])
+    averages[4].to_csv(f'{exp_dir}/poo.csv')
+    figs['poo'] = vis_poo(averages[4])
+    for fig in figs:
+        if html:
+            figs[fig].write_html(f'{exp_dir}/{fig}.html')
+        if png: 
+            figs[fig].write_image(f'{exp_dir}/{fig}.png')
+    
     
 
 if __name__ == "__main__":
+    seed(42)
+    global html 
+    global png 
+    html = True
+    png = False  #write_image doesn't work on WSL1 -> had to set it to False :-(
+
     experiments = read_file('experiments.csv')
     experiments = expand_players(experiments)
     experiments = convert_values(experiments)
@@ -140,5 +195,3 @@ if __name__ == "__main__":
             print(exp)
 
     process_map(run_experiment, experiments) #max_workers=8
-
-

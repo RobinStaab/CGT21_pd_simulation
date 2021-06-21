@@ -9,7 +9,10 @@ from collections import Counter
 def r_up(val, base):
     return base * math.ceil(val/base)
 
-
+def vis_dpc(dff):
+        df_red = dff.drop('total', axis=1).sort_index(axis=1).transpose()
+        return px.line(df_red, title='Defection rate per class over time')
+    
 def defection_per_class_over_time(history, classes, min_epoch=-1, max_epoch=-1, agg_step=1, visualize=False):
     """ Returns a dict with the defection rate per class over time and overall
 
@@ -63,13 +66,16 @@ def defection_per_class_over_time(history, classes, min_epoch=-1, max_epoch=-1, 
 
     fig = None
     if visualize:
-        df_red = dff.drop('total', axis=1).sort_index(axis=1).transpose()
-
-        fig = px.line(df_red, title='Defection rate per class over time')
+        fig = vis_dpc(dff)
         #fig.show()
-
     return summary_dict, dff, fig
 
+def vis_cd(df):
+        df = df.transpose()
+        mid = df['EMPTY']
+        df.drop(labels=['EMPTY'], axis=1,inplace = True)
+        df.insert(0, 'EMPTY', mid)
+        return px.bar(df, title='Class Distribution over time')
 
 def class_distribution_over_time(graph_history, classes, step_size=1, visualize=False):
 
@@ -92,15 +98,20 @@ def class_distribution_over_time(graph_history, classes, step_size=1, visualize=
 
     fig = None
     if visualize:
-        df = df.transpose()
-        mid = df['EMPTY']
-        df.drop(labels=['EMPTY'], axis=1,inplace = True)
-        df.insert(0, 'EMPTY', mid)
-        fig = px.bar(df, title='Class Distribution over time')
+        fig = vis_cd(df)
         #fig.show()
-
-
     return summary_dict, df, fig
+
+def vis_cvc(df):
+        df2 = df[1] / (df[0]+df[1])
+
+        plotly_dict =    {  'z': df2.values.tolist(),
+                            'x': df2.index.get_level_values(0).unique(),
+                            'y': df2.index.get_level_values(0).unique()}
+
+        # Reshape
+        use_z = np.array(plotly_dict['z']).reshape((len(plotly_dict['x']),len(plotly_dict['y']) ))
+        return ff.create_annotated_heatmap(use_z, x=list(plotly_dict['x']), y=list(plotly_dict['y']), colorscale="tealrose")
 
 def class_vs_class_over_time(history, classes, agg_step=1, visualize=True):
     """ Returns a dict containing the behaviour of each class vs each class at every-point in time
@@ -136,19 +147,13 @@ def class_vs_class_over_time(history, classes, agg_step=1, visualize=True):
     # Dict is done here
     fig = None
     if visualize:
-        df2 = df[1] / (df[0]+df[1])
-
-        plotly_dict =    {  'z': df2.values.tolist(),
-                            'x': df2.index.get_level_values(0).unique(),
-                            'y': df2.index.get_level_values(0).unique()}
-
-        # Reshape
-        use_z = np.array(plotly_dict['z']).reshape((len(plotly_dict['x']),len(plotly_dict['y']) ))
-
-        fig = ff.create_annotated_heatmap(use_z, x=list(plotly_dict['x']), y=list(plotly_dict['y']), colorscale="tealrose")
-
-
+        fig = vis_cvc(df)
+        #fig.show()
     return summary_dict, df, fig
+
+def vis_ppc(dff):
+        df_red = dff.drop('total', axis=1).sort_index(axis=1).transpose()
+        return px.line(df_red, title='Average payoff per class over time')
 
 def payoff_per_class_over_time(history, classes, agg_step=1, visualize=True):
     """ Returns a dict containing the average payoff for each class at every-point in time
@@ -202,12 +207,12 @@ def payoff_per_class_over_time(history, classes, agg_step=1, visualize=True):
     # Dataframe is done here
     fig = None
     if visualize:
-        df_red = dff.drop('total', axis=1).sort_index(axis=1).transpose()
-
-        fig = px.line(df_red, title='Average payoff per class over time')
+        fig = vis_ppc(dff)
         #fig.show()
-
     return summary_dict, dff, fig
+
+def vis_poo(df_red):
+        return px.line(df_red, y="res", title='Percentage of Optimum over time')
 
 def percentage_of_optimum(history, T, classes, agg_step=1, visualize=True):
     """ Returns the percentage of the peak overall utility that we could have achieved
@@ -253,9 +258,8 @@ def percentage_of_optimum(history, T, classes, agg_step=1, visualize=True):
     
     fig = None
     if visualize:
-        fig = px.line(df_red, y="res", title='Percentage of Optimum over time')
+        vis_poo(df_red)
         #fig.show()
-
     return summary_dict, df_red, fig
 
 def class_change_over_time(history, classes, agg_step=1):
