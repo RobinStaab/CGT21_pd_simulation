@@ -1,5 +1,6 @@
 # This is an old project of mine for a practicum in physical chemistry, we can use the skeleton of it
-
+import matplotlib
+matplotlib.use('tkagg')
 from matplotlib.pyplot import title
 from Simulator import Simulator
 from Player import Player
@@ -315,7 +316,7 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
         fig.update_layout(width=800, height=800, title=f"Epoch: {pot_res['epoch']}")
 
         fig_poo = px.line(pot_res['df_poo'], y="res", title='Percentage of Optimum over time')
-
+        print("Done")
         return fig, fig_poo
     except Empty:
         return dash.no_update
