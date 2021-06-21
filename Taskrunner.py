@@ -1,4 +1,5 @@
 
+from History import History
 import multiprocessing as mp
 import numpy as np
 from queue import Empty
@@ -88,12 +89,12 @@ class SimulatorProcess(mp.Process):
             except AssertionError:
                 sim = None
                 state = 0
-            
+
             try:
                 if sim is not None and state == 1:
                     start_t = time.time()
 
-                    #print(f"Starting step:")
+                    print(f"Starting step: {state}")
                     sim.simulate(self.step_size)
                     
                     print(f"Done with step: {time.time()-start_t} - Epoch: {sim.total_epoch}")
@@ -108,11 +109,35 @@ class SimulatorProcess(mp.Process):
 
                     #print(f"Counted players {len(np.nonzero(np.vectorize(my_map)(sim.grid))[0])}")
                     start_t = time.time()
-                    t1, df_dpcot, fig_dpc   = defection_per_class_over_time(sim.get_state(),    self.strats, visualize=False)
+                    
+                    
+                    # We want to have at most 50 time-points (epochs) in here 
+                    sim_state = sim.get_state()
+
+                    # TODO Actually could pre-sort by epoch here and make our live much easier 
+                    curr_Epoch = sim.total_epoch
+                    if(sim.total_epoch > 50):
+                        selected_epochs = list(np.floor(np.linspace(0, sim.total_epoch, 50)))
+                        selected_state = { }
+                        for p_id, p_val in sim_state.items():
+                            for e_id, e_val in p_val.history.items():
+                                for game in e_val:
+                                    if game.epoch in selected_epochs:
+                                        if selected_state.get(p_id) is None:
+                                            selected_state[p_id] = History()
+                                        if selected_state[p_id].history.get(e_id) is None:
+                                            selected_state[p_id].history[e_id] = [ ]
+                                        selected_state[p_id].history[e_id].append(game)
+                    else:
+                        selected_state = sim_state
+                    print(f"Done with reduction: {time.time()-start_t} - Epoch: {sim.total_epoch}")
+
+                    start_t = time.time()
+                    t1, df_dpcot, fig_dpc   = defection_per_class_over_time(selected_state,    self.strats, visualize=False)
                     t2, df_cd, fig_cd       = class_distribution_over_time(sim.map_history,     self.strats, visualize=False)
-                    t3, df_cvc, fig_cvc     = class_vs_class_over_time(sim.get_state(),         self.strats, visualize=False)
-                    t4, df_ppcot, fig_ppcot = payoff_per_class_over_time(sim.get_state(),       self.strats, visualize=False)
-                    t5, df_poo, fig_poo     = percentage_of_optimum(sim.get_state(), self.T,    self.strats, visualize=False)
+                    t3, df_cvc, fig_cvc     = class_vs_class_over_time(selected_state,         self.strats, visualize=False)
+                    t4, df_ppcot, fig_ppcot = payoff_per_class_over_time(selected_state,       self.strats, visualize=False)
+                    t5, df_poo, fig_poo     = percentage_of_optimum(selected_state, self.T,    self.strats, visualize=False)
                     print(f"Done with analysis: {time.time()-start_t} - Epoch: {sim.total_epoch}")
 
                     answer = { 'epoch': sim.total_epoch,
