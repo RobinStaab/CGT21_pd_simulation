@@ -152,7 +152,7 @@ def run_experiment(experiment):
         results[2].append(df_cvc)
         t4, df_ppc, fig_ppcot = payoff_per_class_over_time(state, classes, visualize=False)
         results[3].append(df_ppc)
-        t5, df_poo, fig_poo = percentage_of_optimum(state, experiment['params']['T'], classes, visualize=False)
+        t5, df_poo, fig_poo = percentage_of_optimum(state, experiment['params']['R'], classes, visualize=False)
         results[4].append(df_poo)
         poo = results[4]
     

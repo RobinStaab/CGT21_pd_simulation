@@ -214,7 +214,7 @@ def payoff_per_class_over_time(history, classes, agg_step=1, visualize=True):
 def vis_poo(df_red):
         return px.line(df_red, y="res", title='Percentage of Optimum over time')
 
-def percentage_of_optimum(history, T, classes, agg_step=1, visualize=True):
+def percentage_of_optimum(history, cop_val, classes, agg_step=1, visualize=True):
     """ Returns the percentage of the peak overall utility that we could have achieved
 
     Args:
@@ -253,7 +253,7 @@ def percentage_of_optimum(history, T, classes, agg_step=1, visualize=True):
     df = pd.DataFrame.from_dict(summary_dict, orient='index')
 
     # Here the df is done
-    df['res'] = df['pay_off']/(T * df['num_of_matches'])
+    df['res'] = df['pay_off']/(cop_val * df['num_of_matches'])
     df_red = df.drop(['total']).sort_index()
     
     fig = None

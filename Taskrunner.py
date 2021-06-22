@@ -148,7 +148,7 @@ class SimulatorProcess(mp.Process):
                     t2, df_cd, fig_cd       = class_distribution_over_time(sim.map_history,     self.strats, visualize=False)
                     t3, df_cvc, fig_cvc     = class_vs_class_over_time(selected_state,         self.strats, visualize=False)
                     t4, df_ppcot, fig_ppcot = payoff_per_class_over_time(selected_state,       self.strats, visualize=False)
-                    t5, df_poo, fig_poo     = percentage_of_optimum(selected_state, self.T,    self.strats, visualize=False)
+                    t5, df_poo, fig_poo     = percentage_of_optimum(selected_state, self.R,    self.strats, visualize=False)
                     print(f"Done with analysis: {time.time()-start_t} - Epoch: {sim.total_epoch}")
 
                     answer = { 'epoch': sim.total_epoch,
