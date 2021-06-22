@@ -6,6 +6,7 @@ class History:
         """History
         """
         self.history = SortedDict({})
+        self.index_history = { }
         self.epoch_cap = 50
 
     def add_game(self, game_data: Game_data) -> None:
@@ -22,7 +23,14 @@ class History:
         #check if newly added game_data has newer epoch than previously added game_data
         if len(self.history[game_data.opponent_id]) > 1:
             assert self.history[game_data.opponent_id][-1].epoch > self.history[game_data.opponent_id][-2].epoch
-    
+
+        # Append to the index_history
+        if self.index_history.get(game_data.epoch) == None:
+            self.index_history[game_data.epoch] = { }
+        if self.index_history[game_data.epoch].get(game_data.opponent_id) == None:
+            self.index_history[game_data.epoch][game_data.opponent_id] = []
+        self.index_history[game_data.epoch][game_data.opponent_id].append(game_data)
+
     def reduce(self, current_epoch) -> None:
         """Reduces history to epoch_cap
 

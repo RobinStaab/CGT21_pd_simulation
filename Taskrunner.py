@@ -52,6 +52,7 @@ class SimulatorProcess(mp.Process):
                                     next_task.msg_content['R'],
                                     next_task.msg_content['S'], 
                                     next_task.msg_content['P'],
+                                    False,
                                     next_task.msg_content['rand_seed'])
                     
                     history = []
@@ -119,7 +120,7 @@ class SimulatorProcess(mp.Process):
                     if(sim.total_epoch > 50):
                         selected_epochs = list(np.floor(np.linspace(0, sim.total_epoch, 50)))
                         selected_state = { }
-                        for p_id, p_val in sim_state.items():
+                        """for p_id, p_val in sim_state.items():
                             for e_id, e_val in p_val.history.items():
                                 for game in e_val:
                                     if game.epoch in selected_epochs:
@@ -127,7 +128,16 @@ class SimulatorProcess(mp.Process):
                                             selected_state[p_id] = History()
                                         if selected_state[p_id].history.get(e_id) is None:
                                             selected_state[p_id].history[e_id] = [ ]
-                                        selected_state[p_id].history[e_id].append(game)
+                                        selected_state[p_id].history[e_id].append(game)"""
+                        for p_id, p_val in sim_state.items():
+                            for t_id, t_val in p_val.index_history.items():
+                                if t_id in selected_epochs:
+                                    if selected_state.get(p_id) is None:
+                                            selected_state[p_id] = History()
+                                    for e_id, e_val in t_val.items():
+                                        if selected_state[p_id].history.get(e_id) is None:
+                                            selected_state[p_id].history[e_id] = [ ]
+                                        selected_state[p_id].history[e_id].extend(e_val)
                     else:
                         selected_state = sim_state
                     print(f"Done with reduction: {time.time()-start_t} - Epoch: {sim.total_epoch}")
