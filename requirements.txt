@@ -1,4 +1,8 @@
 sortedcontainers
 tqdm
-deepmerge
 dash
+numpy
+pandas
+psutil
+requests
+matplotlib

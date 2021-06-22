@@ -225,7 +225,7 @@ if __name__ == "__main__":
     global html 
     global png 
     html = True
-    png = False  #write_image doesn't work on WSL1 -> had to set it to False :-(
+    png = True  #write_image doesn't work on WSL1 -> had to set it to False :-(
 
     experiments = read_file('experiments.csv')
     experiments = expand_players(experiments)

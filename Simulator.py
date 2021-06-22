@@ -53,7 +53,7 @@ class Simulator:
         self.grid = np.zeros((grid_x, grid_y))
         assert self.grid_x * self.grid_y >= num_players, "Too many players for the grid-size"
 
-        print(f"USING ITER_POL: {self.use_iterated_policy}")
+        #print(f"USING ITER_POL: {self.use_iterated_policy}")
         # Setup the payoff matrices
         # Format
         #

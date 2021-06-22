@@ -1,6 +1,8 @@
 # This is an old project of mine for a practicum in physical chemistry, we can use the skeleton of it
+import platform
 import matplotlib
-matplotlib.use('tkagg')
+if platform.system().lower().startswith('win'):
+    matplotlib.use('tkagg')
 from matplotlib.pyplot import title
 from Simulator import Simulator
 from Player import Player
@@ -9,7 +11,6 @@ from Taskrunner import SimulatorProcess, ProcessMsg
 import time
 from test_simulator import *
 from dash.dependencies import Input, Output, State, MATCH, ALL
-from statistics import median
 import plotly.express as px
 import pandas as pd
 from dash.exceptions import PreventUpdate
@@ -270,7 +271,7 @@ app.layout = html.Div(
                                 html.Button('Refresh', id='refresh', n_clicks=0)
                             ]),
                             dcc.Graph(id='play-graph', figure=fig),
-                            dcc.Interval(id='interval-component', interval=200,  # in milliseconds
+                            dcc.Interval(id='interval-component', interval=300,  # in milliseconds
                                          n_intervals=0)]),
                         html.Div(children=[
                             html.Div(className="timeline",
@@ -290,7 +291,6 @@ app.layout = html.Div(
 
 @ app.callback(
     Output('play-graph', 'figure'),
-    Output('poo-plot', 'figure'),
     [Input('interval-component', 'n_intervals')],
     [State("slider-T", 'value'),
      State("slider-R", 'value'),
@@ -302,7 +302,7 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
 
     # NOTE I just removed this for testing purposes
     # inputs = [val_T, val_R, val_P, val_S] + list(args[0])       # This excludes any inputs not regulated through sliders but we can change this later if needed
-
+    print("WTF")
     try:
         pot_res = res_queue.get(False)   # Non-Blocking get
 
@@ -315,39 +315,11 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
             hoverongaps=False))
         fig.update_layout(width=800, height=800, title=f"Epoch: {pot_res['epoch']}")
 
-        fig_poo = px.line(pot_res['df_poo'], y="res", title='Percentage of Optimum over time')
+        #fig_poo = px.line(pot_res['df_poo'], y="res", title='Percentage of Optimum over time')
         print("Done")
-        return fig, fig_poo
+        return fig#, fig_poo
     except Empty:
         return dash.no_update
-
-
-# @ app.callback(
-#     Output('play-graph', 'figure'),
-#     Input('refresh', 'n_clicks'),
-#     prevent_initial_call=True)
-# def refresh_sim(*args):
-
-#     print("You clicked me!")
-#     try:
-#         pot_res = res_queue.get(False)   # Non-Blocking get
-#         print(f"Update1: {pot_res['epoch']} - Q-size: {res_queue.qsize()}")
-#         while not res_queue.empty() > 0:
-#             pot_res = res_queue.get(False)
-#             print(f"Found epoch: {pot_res['epoch']} - Q-size: {res_queue.qsize()}")
-
-#         print(f"Update: {pot_res['epoch']}")
-#         fig = go.Figure(data=go.Heatmap(
-#             name=f"Epoch: {pot_res['epoch']}",
-#             z=pot_res["grid"],
-#             xgap=1.5,
-#             ygap=1.5,
-#             hoverongaps=False))
-#         fig.update_layout(width=800, height=800, title=f"Epoch: {pot_res['epoch']}")
-
-#         return fig
-#     except Empty:
-#         return dash.no_update
 
 
 @ app.callback(
