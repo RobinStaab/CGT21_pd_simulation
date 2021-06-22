@@ -58,6 +58,7 @@ class SimulatorProcess(mp.Process):
                     history = []
                     state = 1
                     self.T = next_task.msg_content['T']
+                    self.R = next_task.msg_content['R']
 
                     print(f"Restarted Simulation with new CFG { next_task.msg_content['grid_x']} x { next_task.msg_content['grid_y']} - Num_players: {next_task.msg_content['num_players']}")
                 
