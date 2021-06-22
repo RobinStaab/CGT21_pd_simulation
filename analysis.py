@@ -103,7 +103,7 @@ def class_distribution_over_time(graph_history, classes, step_size=1, visualize=
     return summary_dict, df, fig
 
 def vis_cvc(df):
-        df2 = df[1] / (df[0]+df[1])
+        df2 = (df[1] / (df[0]+df[1])).round(2)
 
         plotly_dict =    {  'z': df2.values.tolist(),
                             'x': df2.index.get_level_values(0).unique(),

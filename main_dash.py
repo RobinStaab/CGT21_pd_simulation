@@ -22,6 +22,7 @@ import plotly.graph_objects as go
 import multiprocessing as mp
 import numpy as np
 from queue import Empty
+from analysis import vis_dpc, vis_poo
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -36,6 +37,10 @@ Strategies = {'RANDOM': 1, 'DEFECT': 2, 'COOPERATE': 3,
 
 fig = go.Figure()
 poo_plot = go.Figure()
+dpc_plot = go.Figure()
+cd_plot = go.Figure()
+cvc_plot = go.Figure()
+ppc_plot = go.Figure()
 
 colorscales = px.colors.named_colorscales()
 
@@ -271,14 +276,18 @@ app.layout = html.Div(
                                 html.Button('Refresh', id='refresh', n_clicks=0)
                             ]),
                             dcc.Graph(id='play-graph', figure=fig),
-                            dcc.Interval(id='interval-component', interval=300,  # in milliseconds
+                            dcc.Interval(id='interval-component', interval=1000,  # in milliseconds
                                          n_intervals=0)]),
                         html.Div(children=[
                             html.Div(className="timeline",
                                      children="Timeline"),
 
                             html.Div(className="plots", children=[
+                                dcc.Graph(id='cd-plot', figure=cd_plot),
                                 dcc.Graph(id='poo-plot', figure=poo_plot),
+                                dcc.Graph(id='dpc-plot', figure=dpc_plot),
+                                dcc.Graph(id='cvc-plot', figure=cvc_plot),
+                                dcc.Graph(id='ppc-plot', figure=ppc_plot),
                             ])
                         ])
                     ]),
@@ -291,6 +300,11 @@ app.layout = html.Div(
 
 @ app.callback(
     Output('play-graph', 'figure'),
+    Output('cd-plot', 'figure'),
+    Output('poo-plot', 'figure'),
+    Output('dpc-plot', 'figure'),
+    Output('cvc-plot', 'figure'),
+    Output('ppc-plot', 'figure'),
     [Input('interval-component', 'n_intervals')],
     [State("slider-T", 'value'),
      State("slider-R", 'value'),
@@ -302,7 +316,7 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
 
     # NOTE I just removed this for testing purposes
     # inputs = [val_T, val_R, val_P, val_S] + list(args[0])       # This excludes any inputs not regulated through sliders but we can change this later if needed
-    print("WTF")
+    
     try:
         pot_res = res_queue.get(False)   # Non-Blocking get
 
@@ -312,12 +326,19 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
             z=pot_res["grid"],
             xgap=1.5,
             ygap=1.5,
-            hoverongaps=False))
+            hoverongaps=False,
+            showscale=False))
         fig.update_layout(width=800, height=800, title=f"Epoch: {pot_res['epoch']}")
-
+        
+        fig_cd  = vis_cd(pot_res['df_cd'])
+        fig_poo = vis_poo(pot_res['df_poo'])
+        fig_dpc = vis_dpc(pot_res['df_dpc'])
+        fig_cvc = vis_cvc(pot_res['df_cvc'])
+        fig_ppc = vis_ppc(pot_res['df_ppc'])
+        
         #fig_poo = px.line(pot_res['df_poo'], y="res", title='Percentage of Optimum over time')
         print("Done")
-        return fig#, fig_poo
+        return fig, fig_cd, fig_poo, fig_dpc, fig_cvc, fig_ppc
     except Empty:
         return dash.no_update
 

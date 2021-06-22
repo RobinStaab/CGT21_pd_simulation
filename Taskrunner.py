@@ -84,8 +84,9 @@ class SimulatorProcess(mp.Process):
                     else:
                         print(f"Nothing to continue")
 
-            except Empty:   # Might just sleep on empty queue
-                time.sleep(0.25)
+            except Empty :   # Might just sleep on empty queue
+                if sim is None:
+                    time.sleep(0.5)
                 pass
             except AssertionError:
                 sim = None
@@ -152,10 +153,10 @@ class SimulatorProcess(mp.Process):
 
                     answer = { 'epoch': sim.total_epoch,
                             'grid' : np.vectorize(my_map)(sim.grid),
-                            'df_dpcot': df_dpcot,
+                            'df_dpc': df_dpcot,
                             'df_cd': df_cd,
                             'df_cvc': df_cvc,
-                            'df_ppcot': df_ppcot,
+                            'df_ppc': df_ppcot,
                             'df_poo': df_poo,
                             #'state': sim.get_state()   Kills it
                             }     # TODO compute full output state at this point
