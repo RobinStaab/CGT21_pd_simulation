@@ -1,6 +1,8 @@
 # This is an old project of mine for a practicum in physical chemistry, we can use the skeleton of it
+import platform
 import matplotlib
-matplotlib.use('tkagg')
+if platform.system().lower().startswith('win'):
+    matplotlib.use('tkagg')
 from matplotlib.pyplot import title
 from Simulator import Simulator
 from Player import Player
