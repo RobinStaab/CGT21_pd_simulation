@@ -1,4 +1,3 @@
-# This is an old project of mine for a practicum in physical chemistry, we can use the skeleton of it
 import platform
 import matplotlib
 if platform.system().lower().startswith('win'):
@@ -22,7 +21,7 @@ import plotly.graph_objects as go
 import multiprocessing as mp
 import numpy as np
 from queue import Empty
-from analysis import vis_dpc, vis_poo
+from analysis import vis_dpc, vis_poo, Strategies
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -32,8 +31,9 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 
-Strategies = {'RANDOM': 1, 'DEFECT': 2, 'COOPERATE': 3,
-              'GT': 4, 'TFT': 5, 'TFTD': 6, 'TF2T': 7}
+
+
+map_colorscale = [[0, '#636EFA'],[1/7, '#EF553B'],[2/7, '#00CC96'],[3/7, '#AB63FA'],[4/7,'#FFA15A'],[5/7, '#19D3F3'],[6/7, '#FF6692'],[1, '#B6E880']]
 
 fig = go.Figure()
 poo_plot = go.Figure()
@@ -50,7 +50,7 @@ res_queue = None
 app.layout = html.Div(
     className="main_app",
     children=[
-        # This feels really dirty but how can I have dash callback without an output?
+        # This feels really dirty but how can I have dash callback without an output? Callbacks are output dependend...but you can have a dummy one just add a hidden p or div and return whatever
         dcc.Store(id='local_start', storage_type='local'),
         # Local Store to keep the Simulator
         dcc.Store(id='local_stop', storage_type='local'),
@@ -326,11 +326,12 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
             z=pot_res["grid"],
             xgap=1.5,
             ygap=1.5,
+            colorscale=map_colorscale,
             hoverongaps=False,
             showscale=False))
         fig.update_layout(width=800, height=800, title=f"Epoch: {pot_res['epoch']}")
         
-        fig_cd  = vis_cd(pot_res['df_cd'])
+        fig_cd  = vis_cd(pot_res['df_cd'], map_colorscale)
         fig_poo = vis_poo(pot_res['df_poo'])
         fig_dpc = vis_dpc(pot_res['df_dpc'])
         fig_cvc = vis_cvc(pot_res['df_cvc'])

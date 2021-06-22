@@ -6,6 +6,9 @@ import plotly.graph_objects as go
 import plotly.figure_factory as ff
 from collections import Counter
 
+Strategies = {'RANDOM': 1, 'DEFECT': 2, 'COOPERATE': 3,
+              'GT': 4, 'TFT': 5, 'TFTD': 6, 'TF2T': 7}
+
 def r_up(val, base):
     return base * math.ceil(val/base)
 
@@ -70,12 +73,12 @@ def defection_per_class_over_time(history, classes, min_epoch=-1, max_epoch=-1, 
         #fig.show()
     return summary_dict, dff, fig
 
-def vis_cd(df):
+def vis_cd(df, colors):
         df = df.transpose()
         mid = df['EMPTY']
         df.drop(labels=['EMPTY'], axis=1,inplace = True)
         df.insert(0, 'EMPTY', mid)
-        return px.bar(df, title='Class Distribution over time')
+        return px.bar(df, y=['EMPTY'] + list(Strategies.keys()), title='Class Distribution over time', color_continuous_scale=colors)
 
 def class_distribution_over_time(graph_history, classes, step_size=1, visualize=False):
 
