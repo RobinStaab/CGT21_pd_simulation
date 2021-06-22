@@ -6,6 +6,8 @@ from tqdm.contrib.concurrent import process_map
 from analysis import *
 from random import randint, seed
 from itertools import repeat
+import plotly.figure_factory as ff
+from plotly.subplots import make_subplots
 
 def read_file(file_name):
     experiments = []
@@ -27,7 +29,10 @@ def read_file(file_name):
                 param_values = line.split(', ')
                 assert len(param_keys)==len(param_values), f"Missing values in parameters of experiment {nr_experiments}"
                 for key_i in range(len(param_keys)):
-                    experiments[-1]['params'][param_keys[key_i]] = param_values[key_i]
+                    if param_values[key_i][0] == '[' and param_values[key_i][-1] == ']':
+                        experiments[-1]['params'][param_keys[key_i]] = param_values[key_i][1:-1].split(',')
+                    else:
+                        experiments[-1]['params'][param_keys[key_i]] = param_values[key_i]
                 read_ind = read_ind + 1
             elif read_ind == 3:
                 read_ind = 0
@@ -83,6 +88,8 @@ def convert_values(experiments):
                 exp['params'][param] = int(float(exp['params'][param]))
             elif param in ['infinite']:
                 exp['params'][param] = exp['params'][param] == 'True'
+            elif param in ['snapshots']:
+                exp['params'][param] = [int(val) for val in exp['params'][param]]
             else:
                 assert False, f"Parameter {key} not implemented for experiments"
         for player in exp['players']:
@@ -129,22 +136,25 @@ def run_experiment(experiment):
     nr_runs = experiment['params']['runs']
     results = [[] for i in range(nr_results)]
     averages = []
+    #comment this line if you want to use more specific classes than just strategies
+    classes = strategies
     for r in range(nr_runs):
-
         sim = Simulator(experiment['params']['grid_x'], experiment['params']['grid_y'], num_players, 1, 3, player_cfgs, experiment['params']['T'], experiment['params']['R'], experiment['params']['S'], experiment['params']['P'], experiment['params']['infinite'], rand_seed=randint(0,13371337))
         sim.simulate(experiment['params']['epochs'], visualize=False)
         state = sim.get_state()
+        map_history = sim.map_history
 
-        t, df_dpc, fig_dpc = defection_per_class_over_time(sim.get_state(), strategies, visualize=False)
+        t, df_dpc, fig_dpc = defection_per_class_over_time(state, classes, visualize=False)
         results[0].append(df_dpc)
-        t2, df_cd, fig_cd   = class_distribution_over_time(sim.map_history, strategies, visualize=False)
+        t2, df_cd, fig_cd   = class_distribution_over_time(sim.map_history, classes, visualize=False)
         results[1].append(df_cd)
-        t3, df_cvc, fig_cvc = class_vs_class_over_time(sim.get_state(), strategies, visualize=False)
+        t3, df_cvc, fig_cvc = class_vs_class_over_time(state, classes, visualize=False)
         results[2].append(df_cvc)
-        t4, df_ppc, fig_ppcot = payoff_per_class_over_time(sim.get_state(), strategies, visualize=False)
+        t4, df_ppc, fig_ppcot = payoff_per_class_over_time(state, classes, visualize=False)
         results[3].append(df_ppc)
-        t5, df_poo, fig_poo = percentage_of_optimum(sim.get_state(), experiment['params']['T'], strategies, visualize=False)
+        t5, df_poo, fig_poo = percentage_of_optimum(state, experiment['params']['T'], classes, visualize=False)
         results[4].append(df_poo)
+        poo = results[4]
     
     for res in range(nr_results):
         #print(results[res])
@@ -180,8 +190,36 @@ def run_experiment(experiment):
         if png: 
             figs[fig].write_image(f'{exp_dir}/{fig}.png')
     
-    
+    #all_grids = make_subplots(rows=1, cols=len(experiment['params']['snapshots']))
+    for snapshot_i in experiment['params']['snapshots']:
+        arr = map_history[snapshot_i-1].copy()
+        classes.append('EMPTY')
+        for i in range(len(arr)):
+            arr[i] = classes.index(arr[i])
+        grid = np.array(arr).reshape(-1,10)
 
+        colorscale = [[0, 'navy'], [1, 'plum']]
+        font_colors = ['black'] #['white', 'black']
+        fig = ff.create_annotated_heatmap(
+            z=grid,
+            annotation_text=np.array(map_history[snapshot_i-1]).reshape(-1,10),
+            colorscale='Phase', font_colors=font_colors,
+            name=f"Epoch: {snapshot_i}",
+            xgap=1.5, ygap=1.5)
+        fig.update_layout(width=800, height=800, title=f"Epoch: {snapshot_i}")
+        #all_grids.add_trace(fig, row=1, col=experiment['params']['snapshots'].index(snapshot_i)+1)
+        if html:
+            fig.write_html(f'{exp_dir}/grid_{snapshot_i}.html')
+        if png: 
+            fig.write_image(f'{exp_dir}/grid_{snapshot_i}.png')
+    
+    #if html:
+    #    all_grids.write_html(f'{exp_dir}/all_grids.html')
+    #if png: 
+    #    all_grids.write_image(f'{exp_dir}/all_grids.png')
+
+
+    
 if __name__ == "__main__":
     seed(42)
     global html 
