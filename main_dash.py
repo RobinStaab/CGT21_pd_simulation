@@ -31,9 +31,8 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 
-
-
 map_colorscale = [[0, '#636EFA'],[1/7, '#EF553B'],[2/7, '#00CC96'],[3/7, '#AB63FA'],[4/7,'#FFA15A'],[5/7, '#19D3F3'],[6/7, '#FF6692'],[1, '#B6E880']]
+
 
 fig = go.Figure()
 poo_plot = go.Figure()
@@ -116,7 +115,7 @@ app.layout = html.Div(
                                 html.P(children="T"),
                                 dcc.Slider(
                                     id="slider-T",
-                                    min=1,
+                                    min=0,
                                     max=40,
 
                                     step=1,
@@ -133,7 +132,7 @@ app.layout = html.Div(
                                 html.P(children="R"),
                                 dcc.Slider(
                                     id="slider-R",
-                                    min=1,
+                                    min=0,
                                     max=40,
                                     step=1,
                                     marks={
@@ -150,7 +149,7 @@ app.layout = html.Div(
                                 html.P(children="P"),
                                 dcc.Slider(
                                     id="slider-P",
-                                    min=1,
+                                    min=0,
                                     max=40,
                                     step=1,
                                     marks={
@@ -166,7 +165,7 @@ app.layout = html.Div(
                                 html.P(children="S"),
                                 dcc.Slider(
                                     id="slider-S",
-                                    min=1,
+                                    min=0,
                                     max=40,
                                     step=1,
                                     marks={
@@ -227,7 +226,7 @@ app.layout = html.Div(
                                 id="imit_prob",
                                 type="number",
                                 value=0.2,
-                                min=0, max=1, step=0.1
+                                min=0, max=1, step=0.01
                             )]),
 
                         html.Div(children=[
@@ -236,7 +235,7 @@ app.layout = html.Div(
                                 id="migrate_prob",
                                 type="number",
                                 value=0.1,
-                                min=0, max=1, step=0.1
+                                min=0, max=1, step=0.01
                             )]),
                         html.Div(children=[
                             html.Label("Step Size"),
@@ -320,7 +319,7 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
     try:
         pot_res = res_queue.get(False)   # Non-Blocking get
 
-        print(f"Update: {pot_res['epoch']}")
+        print(f"Update: {pot_res['epoch']} - {pot_res['strategies']}")
         fig = go.Figure(data=go.Heatmap(
             name=f"Epoch: {pot_res['epoch']}",
             z=pot_res["grid"],
