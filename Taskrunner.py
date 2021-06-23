@@ -159,6 +159,7 @@ class SimulatorProcess(mp.Process):
                             'df_cvc': df_cvc,
                             'df_ppc': df_ppcot,
                             'df_poo': df_poo,
+                            'strategies': self.strats
                             #'state': sim.get_state()   Kills it
                             }     # TODO compute full output state at this point
 
