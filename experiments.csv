@@ -1,9 +1,9 @@
 #test1
 T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
-1, 1, 1, 1, 10, 100, [25,50,75,100], 10, 10, False
+3, 2, 0.5, 0.5, 1, 1000, [25,50,75,100], 10, 10, False
 nr, strat, imit_prob, migrate_prob, omega
 10, RANDOM, .1, .1, .5
 10, TFT, .1, .1, .5
 10, TFTD, .1, .1, .5
 10, TF2T, .1, .1, .5
-10, DEFECT, .1, .1, .5
+10, DEFECT, .1, 1, .5
