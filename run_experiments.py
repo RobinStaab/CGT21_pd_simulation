@@ -8,6 +8,7 @@ from random import randint, seed
 from itertools import repeat
 import plotly.figure_factory as ff
 from plotly.subplots import make_subplots
+from math import sqrt
 
 def read_file(file_name):
     experiments = []
@@ -109,8 +110,8 @@ def convert_values(experiments):
             if p_i in exp['changed_keys']:
                 for key in exp['changed_keys'][p_i]:
                     changes.append(f'{key}-{exp["players"][p_i][key]}')
-                player_changes.append(f"{p_i}:{'_'.join(changes)}")
-        exp['name'] = exp['name'] + ''.join([f'_({change})' for change in player_changes])
+                player_changes.append(f"p-{p_i} {' '.join(changes)}")
+        exp['name'] = exp['name'] + ''.join([f'({change})' for change in player_changes])
 
     return experiments
 
@@ -135,7 +136,6 @@ def run_experiment(experiment):
     nr_results = 5
     nr_runs = experiment['params']['runs']
     results = [[] for i in range(nr_results)]
-    averages = []
     #comment this line if you want to use more specific classes than just strategies
     classes = strategies
     for r in range(nr_runs):
@@ -156,22 +156,37 @@ def run_experiment(experiment):
         results[4].append(df_poo)
         poo = results[4]
     
+    averages = []
+    variances = []
     for res in range(nr_results):
-        #print(results[res])
-        for run in range(nr_runs):
-            if run == 0:
-                sum = results[res][run]
-            else:
-                sum = sum + results[res][run]
+        if res == 2:
+            lvl = [0,1]
+        else:
+            lvl = 0
+        data = pd.concat(results[res]).groupby(level=lvl)
+        averages.append(data.mean())
+
+        if nr_runs > 1:
+            var = data.var()
+            if res == 2:
+                var = (var[1] / (var[0]+var[1])).round(2)
+            if res == 4:
+                var = var['res']
             
-        averages.append(sum/nr_runs)
-        #print(averages[-1])
+            variances.append(var)
     
     if not os.path.exists('data'):
         os.makedirs('data')
     exp_dir = f"data/{experiment['name']}"
     if not os.path.exists(exp_dir):
         os.makedirs(exp_dir)
+    
+    if nr_runs > 1:
+        max_vars = [values.max().max() for values in variances]
+        value_names = ['dpc', 'cd', 'cvc_rel', 'ppc', 'poo_res']
+        with open(f'{exp_dir}/max_var_dev.txt', "w") as f:
+            f.write('name\t\tvariance\tdeviation\n')
+            f.write('\n'.join([f'{value_names[i]}\t\t{round(max_vars[i],2)}\t\t{round(sqrt(max_vars[i]),2)}' for i in range(len(max_vars))]))
 
     figs = {}
     averages[0].to_csv(f'{exp_dir}/dpc.csv')
@@ -219,14 +234,12 @@ def run_experiment(experiment):
     #    all_grids.write_image(f'{exp_dir}/all_grids.png')
 
 
-    
-if __name__ == "__main__":
-    seed(42)
-    global html 
-    global png 
-    html = True
-    png = True  #write_image doesn't work on WSL1 -> had to set it to False :-(
 
+seed(42)
+html = True
+png = True  #write_image doesn't work on WSL1 -> had to set it to False :-(
+
+if __name__ == "__main__":
     experiments = read_file('experiments.csv')
     experiments = expand_players(experiments)
     experiments = convert_values(experiments)
