@@ -165,16 +165,15 @@ def run_experiment(experiment):
             lvl = 0
         data = pd.concat(results[res]).groupby(level=lvl)
         averages.append(data.mean())
-        var = data.var()
-        if res == 2:
-            var = (var[1] / (var[0]+var[1])).round(2)
-        if res == 4:
-            var = var['res']
-        
-        variances.append(var)
 
-    
-    max_vars = [values.max().max() for values in variances]
+        if nr_runs > 1:
+            var = data.var()
+            if res == 2:
+                var = (var[1] / (var[0]+var[1])).round(2)
+            if res == 4:
+                var = var['res']
+            
+            variances.append(var)
     
     if not os.path.exists('data'):
         os.makedirs('data')
@@ -182,10 +181,12 @@ def run_experiment(experiment):
     if not os.path.exists(exp_dir):
         os.makedirs(exp_dir)
     
-    value_names = ['dpc', 'cd', 'cvc_rel', 'ppc', 'poo_res']
-    with open(f'{exp_dir}/max_var_dev.txt', "w") as f:
-        f.write('name\t\tvariance\tdeviation\n')
-        f.write('\n'.join([f'{value_names[i]}\t\t{round(max_vars[i],2)}\t\t{round(sqrt(max_vars[i]),2)}' for i in range(len(max_vars))]))
+    if nr_runs > 1:
+        max_vars = [values.max().max() for values in variances]
+        value_names = ['dpc', 'cd', 'cvc_rel', 'ppc', 'poo_res']
+        with open(f'{exp_dir}/max_var_dev.txt', "w") as f:
+            f.write('name\t\tvariance\tdeviation\n')
+            f.write('\n'.join([f'{value_names[i]}\t\t{round(max_vars[i],2)}\t\t{round(sqrt(max_vars[i]),2)}' for i in range(len(max_vars))]))
 
     figs = {}
     averages[0].to_csv(f'{exp_dir}/dpc.csv')
