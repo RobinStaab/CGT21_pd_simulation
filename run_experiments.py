@@ -110,8 +110,8 @@ def convert_values(experiments):
             if p_i in exp['changed_keys']:
                 for key in exp['changed_keys'][p_i]:
                     changes.append(f'{key}-{exp["players"][p_i][key]}')
-                player_changes.append(f"{p_i}:{'_'.join(changes)}")
-        exp['name'] = exp['name'] + ''.join([f'_({change})' for change in player_changes])
+                player_changes.append(f"p-{p_i} {' '.join(changes)}")
+        exp['name'] = exp['name'] + ''.join([f'({change})' for change in player_changes])
 
     return experiments
 
