@@ -225,13 +225,11 @@ def run_experiment(experiment):
 
 
 
+seed(42)
+html = True
+png = True  #write_image doesn't work on WSL1 -> had to set it to False :-(
+
 if __name__ == "__main__":
-    seed(42)
-    global html 
-    global png 
-    html = True
-    png = True  #write_image doesn't work on WSL1 -> had to set it to False :-(
-        
     experiments = read_file('experiments.csv')
     experiments = expand_players(experiments)
     experiments = convert_values(experiments)
