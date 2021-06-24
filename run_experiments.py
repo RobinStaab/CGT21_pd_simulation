@@ -8,6 +8,7 @@ from random import randint, seed
 from itertools import repeat
 import plotly.figure_factory as ff
 from plotly.subplots import make_subplots
+from math import sqrt
 
 def read_file(file_name):
     experiments = []
@@ -164,7 +165,14 @@ def run_experiment(experiment):
             lvl = 0
         data = pd.concat(results[res]).groupby(level=lvl)
         averages.append(data.mean())
-        variances.append(data.var())
+        var = data.var()
+        if res == 2:
+            var = (var[1] / (var[0]+var[1])).round(2)
+        if res == 4:
+            var = var['res']
+        
+        variances.append(var)
+
     
     max_vars = [values.max().max() for values in variances]
     
@@ -174,9 +182,10 @@ def run_experiment(experiment):
     if not os.path.exists(exp_dir):
         os.makedirs(exp_dir)
     
-    value_names = ['dpc', 'cd', 'cvc', 'ppc', 'poo']
-    with open(f'{exp_dir}/max_vars.txt', "w") as f:
-        f.write('\n'.join([f'{value_names[i]}\t{max_vars[i]}' for i in range(len(max_vars))]))
+    value_names = ['dpc', 'cd', 'cvc_rel', 'ppc', 'poo_res']
+    with open(f'{exp_dir}/max_var_dev.txt', "w") as f:
+        f.write('name\t\tvariance\tdeviation\n')
+        f.write('\n'.join([f'{value_names[i]}\t\t{round(max_vars[i],2)}\t\t{round(sqrt(max_vars[i]),2)}' for i in range(len(max_vars))]))
 
     figs = {}
     averages[0].to_csv(f'{exp_dir}/dpc.csv')
