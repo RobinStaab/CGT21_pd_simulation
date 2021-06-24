@@ -7,14 +7,22 @@ import plotly.figure_factory as ff
 from collections import Counter
 
 Strategies = {'RANDOM': 1, 'DEFECT': 2, 'COOPERATE': 3,
-              'GT': 4, 'TFT': 5, 'TFTD': 6, 'TF2T': 7}
+              'GT': 4, 'TFT': 5, 'TFTD': 6, 'TF2T': 7, 'EMPTY': 8}
+
+rStrategies = {0: 'EMPTY', 1: 'RANDOM', 2: 'DEFECT', 3: 'COOPERATE', 4: 'GT', 5: 'TFT', 6: 'TFTD', 7: 'TF2T'}
+
+fix_colorscale = {'EMPTY': '#636EFA', 'RANDOM': '#EF553B', 'DEFECT': '#00CC96', 'COOPERATE': '#AB63FA',
+              'GT': '#FFA15A', 'TFT': '#19D3F3', 'TFTD': '#FF6692', 'TF2T': '#B6E880'}
+
 
 def r_up(val, base):
     return base * math.ceil(val/base)
 
 def vis_dpc(dff):
         df_red = dff.drop('total', axis=1).sort_index(axis=1).transpose()
-        return px.line(df_red, title='Defection rate per class over time')
+        ff = df_red.keys().to_list()
+        ff.sort(key=Strategies.get)
+        return px.line(df_red, y=ff, title='Defection rate per class over time')
     
 def defection_per_class_over_time(history, classes, min_epoch=-1, max_epoch=-1, agg_step=1, visualize=False):
     """ Returns a dict with the defection rate per class over time and overall
@@ -78,10 +86,13 @@ def vis_cd(df, colors=None):
         mid = df['EMPTY']
         df.drop(labels=['EMPTY'], axis=1,inplace = True)
         df.insert(0, 'EMPTY', mid)
+        ff = df.keys().to_list()
+        ff.sort(key=Strategies.get)
+        #colorscale = [[strat, fix_colorscale[strat]] for strat in ff]
         if colors is not None:
-            return px.bar(df, y=['EMPTY'] + list(Strategies.keys()), title='Class Distribution over time', color_continuous_scale=colors)
+            return px.bar(df, y=ff, title='Class Distribution over time')
         else:
-            return px.bar(df, title='Class Distribution over time')
+            return px.bar(df, y=ff, title='Class Distribution over time')
             
 def class_distribution_over_time(graph_history, classes, step_size=1, visualize=False):
 
@@ -159,7 +170,9 @@ def class_vs_class_over_time(history, classes, agg_step=1, visualize=True):
 
 def vis_ppc(dff):
         df_red = dff.drop('total', axis=1).sort_index(axis=1).transpose()
-        return px.line(df_red, title='Average payoff per class over time')
+        ff = df_red.keys().to_list()
+        ff.sort(key=Strategies.get)
+        return px.line(df_red, y=ff, title='Average payoff per class over time')
 
 def payoff_per_class_over_time(history, classes, agg_step=1, visualize=True):
     """ Returns a dict containing the average payoff for each class at every-point in time
