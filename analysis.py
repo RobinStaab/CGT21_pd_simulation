@@ -90,9 +90,9 @@ def vis_cd(df, colors=None):
         ff.sort(key=Strategies.get)
         #colorscale = [[strat, fix_colorscale[strat]] for strat in ff]
         if colors is not None:
-            return px.bar(df, y=ff, title='Class Distribution over time')
+            return px.bar(df, y=ff, title='Class Distribution over Time')
         else:
-            return px.bar(df, y=ff, title='Class Distribution over time')
+            return px.bar(df, y=ff, title='Class Distribution over Time')
             
 def class_distribution_over_time(graph_history, classes, step_size=1, visualize=False):
 
