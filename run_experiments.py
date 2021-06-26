@@ -152,7 +152,8 @@ def run_experiment(experiment):
         results[2].append(df_cvc)
         t4, df_ppc, fig_ppcot = payoff_per_class_over_time(state, classes, visualize=False)
         results[3].append(df_ppc)
-        t5, df_poo, fig_poo = percentage_of_optimum(state, experiment['params']['R'], classes, visualize=False)
+        opt_value =  experiment['params']['R']/(1-experiment['players'][0]['omega']) if experiment['params']['infinite'] else experiment['params']['R']
+        t5, df_poo, fig_poo = percentage_of_optimum(state, opt_value, classes, visualize=False)
         results[4].append(df_poo)
         poo = results[4]
     
@@ -211,13 +212,13 @@ def run_experiment(experiment):
         classes.append('EMPTY')
         for i in range(len(arr)):
             arr[i] = classes.index(arr[i])
-        grid = np.array(arr).reshape(-1,10)
+        grid = np.array(arr).reshape(experiment['params']['grid_x'], -1)
 
         colorscale = [[0, 'navy'], [1, 'plum']]
         font_colors = ['black'] #['white', 'black']
         fig = ff.create_annotated_heatmap(
             z=grid,
-            annotation_text=np.array(map_history[snapshot_i-1]).reshape(-1,10),
+            annotation_text=np.array(map_history[snapshot_i-1]).reshape(experiment['params']['grid_x'], -1),
             colorscale='Phase', font_colors=font_colors,
             name=f"Epoch: {snapshot_i}",
             xgap=1.5, ygap=1.5)
