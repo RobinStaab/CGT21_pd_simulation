@@ -1,9 +1,31 @@
-#test1
+#COOPTFT
 T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
-3, 2, 0.5, 0.5, 1, 1000, [25,50,75,100], 10, 10, False
+3, 2, 0.5, 0.5, 1, 1000, [0,100,250,500,750,1000], 20, 20, False
 nr, strat, imit_prob, migrate_prob, omega
-10, RANDOM, .1, .1, .5
-10, TFT, .1, .1, .5
-10, TFTD, .1, .1, .5
-10, TF2T, .1, .1, .5
-10, DEFECT, .1, 1, .5
+100, COOPERATE, .1, .1, .5
+5;50;5, TFT, .1, 0.1;0.5;0.1, .5
+100, DEFECT, .1, 0.1;1;0.1, .5
+
+#COOPTF2T
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+3, 2, 0.5, 0.5, 1, 1000, [0,100,250,500,750,1000], 20, 20, False
+nr, strat, imit_prob, migrate_prob, omega
+100, COOPERATE, .1, .1, .5
+5;50;5, TF2T, .1, 0.1;0.5;0.1, .5
+100, DEFECT, .1, 0.1;1;0.1, .5
+
+#COOPTFTD
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+3, 2, 0.5, 0.5, 1, 1000, [0,100,250,500,750,1000], 20, 20, False
+nr, strat, imit_prob, migrate_prob, omega
+100, COOPERATE, .1, .1, .5
+5;50;5, TFTD, .1, 0.1;0.5;0.1, .5
+100, DEFECT, .1, 0.1;1;0.1, .5
+
+#COOPGT
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+3, 2, 0.5, 0.5, 1, 1000, [0,100,250,500,750,1000], 20, 20, False
+nr, strat, imit_prob, migrate_prob, omega
+100, COOPERATE, .1, .1, .5
+5;50;5, TFT, .1, 0.1;0.5;0.1, .5
+100, DEFECT, .1, 0.1;1;0.1, .5
