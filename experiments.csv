@@ -1,9 +1,48 @@
 #test1
 T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
-3, 2, 0.5, 0.5, 1, 1000, [25,50,75,100], 10, 10, False
+30, 20, 1, 10, 10, 200, [20,50,80,100], 20, 20, True
 nr, strat, imit_prob, migrate_prob, omega
-10, RANDOM, .1, .1, .5
-10, TFT, .1, .1, .5
-10, TFTD, .1, .1, .5
-10, TF2T, .1, .1, .5
-10, DEFECT, .1, 1, .5
+50, RANDOM, .1, .1, .8
+50, DEFECT, .1, .1, .8
+50, COOPERATE, .1, .1, .8
+50, TFT, .1, .1, .8
+50, TFTD, .1, .1, .8
+50, TF2T, .1, .1, .8
+50, GT, .1, .1, .8
+
+#test2
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+30, 20, 1, 10, 10, 200, [20,50,80,100], 20, 20, True
+nr, strat, imit_prob, migrate_prob, omega
+50, RANDOM, .1, .1, .6
+50, DEFECT, .1, .1, .6
+50, COOPERATE, .1, .1, .6
+50, TFT, .1, .1, .6
+50, TFTD, .1, .1, .6
+50, TF2T, .1, .1, .6
+50, GT, .1, .1, .6
+
+
+#test3
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+30, 20, 1, 10, 10, 200, [20,50,80,100], 20, 20, True
+nr, strat, imit_prob, migrate_prob, omega
+50, RANDOM, .1, .1, .4
+50, DEFECT, .1, .1, .4
+50, COOPERATE, .1, .1, .4
+50, TFT, .1, .1, .4
+50, TFTD, .1, .1, .4
+50, TF2T, .1, .1, .4
+50, GT, .1, .1, .4
+
+#test4
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+30, 20, 1, 10, 10, 200, [20,50,80,100], 20, 20, True
+nr, strat, imit_prob, migrate_prob, omega
+50, RANDOM, .1, .1, .2
+50, DEFECT, .1, .1, .2
+50, COOPERATE, .1, .1, .2
+50, TFT, .1, .1, .2
+50, TFTD, .1, .1, .2
+50, TF2T, .1, .1, .2
+50, GT, .1, .1, .2

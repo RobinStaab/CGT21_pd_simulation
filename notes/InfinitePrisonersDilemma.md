@@ -12,19 +12,19 @@ We calculate the success of the strategy as the expected reward against another 
 
 ##### Experiment set-up
 
-We choose 50 players of each strategy in our simulation on a $20\times 20$ grid. Each strategy is placed at a random location on the grid to start. We use the payoff matrix:
+We choose 50 players of each strategy in our simulation on a $20\times 20$ grid. Each strategy is placed at a random location on the grid to start. Choosing T = 30, R = 20, P = 10, and S = 5 we get the payoff matrix:
 
 |               | Cooperate | Defect |
 | ------------- | --------- | ------ |
-| **Cooperate** | 20,20     | 5,20   |
-| **Defect**    | 20,5      | 10,10  |
+| **Cooperate** | 20,20     | 5,30   |
+| **Defect**    | 30,5      | 10,10  |
 
-with the parameters:
+Our simulation
 
 - Window play size: 1
 - Migration range: 3
-- Imitation probability: 0.2
-- Migration probability 0.1
+- Imitation probability: 0.1
+- Migration probability 0.2
 - Random Seed: 12345
 
 ##### Results
