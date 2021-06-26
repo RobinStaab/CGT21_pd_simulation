@@ -51,11 +51,13 @@ def generate_player(strategy: Strategy, player_class: str, play_window: int, mig
 def generate_simple_players(strategies: List[str], amount: List[int], play_window: int, migrate_window: int, imit_prob: float, migrate_prob: float, omega: float):
     player_cfgs = []
     assert len(strategies) == len(amount)
+    
     for amount, strategy in zip(amount, strategies):
         for i in range(amount):
             player_cfgs.append(generate_player(
                 strategy, strategy, play_window, migrate_window, imit_prob, migrate_prob, omega))
-
+                
+    print("Done")
     return player_cfgs
 
 

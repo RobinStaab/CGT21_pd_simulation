@@ -23,7 +23,6 @@ import numpy as np
 from queue import Empty
 from analysis import vis_dpc, vis_poo, Strategies
 
-
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -368,7 +367,6 @@ def start_sim(clicks, val_T: int = 1, val_R: int = 1, val_P: int = 1, val_S: int
 
     strategy_counts = args[0]
     strategy_names = list(Strategies.keys())
-
 
     msg_dict = {
         'T': val_T,

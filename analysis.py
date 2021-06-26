@@ -7,7 +7,7 @@ import plotly.figure_factory as ff
 from collections import Counter
 
 Strategies = {'RANDOM': 1, 'DEFECT': 2, 'COOPERATE': 3,
-              'GT': 4, 'TFT': 5, 'TFTD': 6, 'TF2T': 7, 'EMPTY': 8}
+              'GT': 4, 'TFT': 5, 'TFTD': 6, 'TF2T': 7}
 
 rStrategies = {0: 'EMPTY', 1: 'RANDOM', 2: 'DEFECT', 3: 'COOPERATE', 4: 'GT', 5: 'TFT', 6: 'TFTD', 7: 'TF2T'}
 
@@ -22,7 +22,7 @@ def vis_dpc(dff):
         df_red = dff.drop('total', axis=1).sort_index(axis=1).transpose()
         ff = df_red.keys().to_list()
         ff.sort(key=Strategies.get)
-        return px.line(df_red, y=ff, title='Defection rate per class over time')
+        return px.line(df_red, y=ff, title='Defection rate per class over time', labels={"index": "epoch", "value": "Defection rate"})
     
 def defection_per_class_over_time(history, classes, min_epoch=-1, max_epoch=-1, agg_step=1, visualize=False):
     """ Returns a dict with the defection rate per class over time and overall
@@ -85,14 +85,14 @@ def vis_cd(df, colors=None):
         df = df.transpose()
         mid = df['EMPTY']
         df.drop(labels=['EMPTY'], axis=1,inplace = True)
-        df.insert(0, 'EMPTY', mid)
+        # df.insert(0, 'EMPTY', mid)
         ff = df.keys().to_list()
         ff.sort(key=Strategies.get)
-        #colorscale = [[strat, fix_colorscale[strat]] for strat in ff]
+        # colorscale = [[strat, fix_colorscale[strat]] for strat in ff]
         if colors is not None:
-            return px.bar(df, y=ff, title='Class Distribution over time')
+            return px.bar(df, y=ff, title='Class Distribution over time', labels={"index": "epoch", "value": "Class Distribution"})
         else:
-            return px.bar(df, y=ff, title='Class Distribution over time')
+            return px.bar(df, y=ff, title='Class Distribution over time', labels={"index": "epoch", "value": "Class Distribution"})
             
 def class_distribution_over_time(graph_history, classes, step_size=1, visualize=False):
 
@@ -172,7 +172,7 @@ def vis_ppc(dff):
         df_red = dff.drop('total', axis=1).sort_index(axis=1).transpose()
         ff = df_red.keys().to_list()
         ff.sort(key=Strategies.get)
-        return px.line(df_red, y=ff, title='Average payoff per class over time')
+        return px.line(df_red, y=ff, title='Average payoff per class over time', labels={"index": "epoch", "value": "Avg. payoff"})
 
 def payoff_per_class_over_time(history, classes, agg_step=1, visualize=True):
     """ Returns a dict containing the average payoff for each class at every-point in time
@@ -231,7 +231,7 @@ def payoff_per_class_over_time(history, classes, agg_step=1, visualize=True):
     return summary_dict, dff, fig
 
 def vis_poo(df_red):
-        return px.line(df_red, y="res", title='Percentage of Optimum over time')
+        return px.line(df_red, y="res", title='Percentage of Optimum over time', labels={"index": "epoch", "res": "Percentage of social optimum"})
 
 def percentage_of_optimum(history, cop_val, classes, agg_step=1, visualize=True):
     """ Returns the percentage of the peak overall utility that we could have achieved

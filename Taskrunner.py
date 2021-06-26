@@ -33,15 +33,15 @@ class SimulatorProcess(mp.Process):
                     self.strats = next_task.msg_content['strategies']
                     self.step_size =next_task.msg_content['step-size']
                     # Reset the simulation here
-                    # print("WTF")
-                    player_cfgs = generate_simple_players( next_task.msg_content['strategies'],
+                    
+                    player_cfgs = generate_simple_players(next_task.msg_content['strategies'],
                                                     next_task.msg_content['counts'],
                                                     next_task.msg_content['play_window'],
                                                     next_task.msg_content['migrate_window'],
                                                     next_task.msg_content['imit_prob'],
                                                     next_task.msg_content['migrate_prob'],
                                                     next_task.msg_content['omega'])
-                    # print("WTF")
+                    
                     sim = Simulator(next_task.msg_content['grid_x'],
                                     next_task.msg_content['grid_y'],
                                     next_task.msg_content['num_players'],
