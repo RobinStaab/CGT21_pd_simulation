@@ -67,7 +67,7 @@ def defection_per_class_over_time(history, classes, min_epoch=-1, max_epoch=-1, 
                     if val +  e_state[1][name] > 0:
                         final_dict[epoch][name] = e_state[1][name] / (val + e_state[1][name])
                     else:
-                        final_dict[epoch][name] = 0
+                        final_dict[epoch][name] = None
 
 
     # Here the dict is complete
@@ -217,7 +217,7 @@ def payoff_per_class_over_time(history, classes, agg_step=1, visualize=True):
                     if itm['num_of_players'][cl] > 0:
                         final_dict[key][cl] = val / itm['num_of_players'][cl]
                     else:
-                        final_dict[key][cl] = 0
+                        final_dict[key][cl] = None
 
     # Dict is done here
     #df = pd.DataFrame.from_dict({(i,j): summary_dict[i][j] for i in summary_dict.keys() for j in summary_dict[i].keys()}, orient='index')

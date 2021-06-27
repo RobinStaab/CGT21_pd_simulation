@@ -1,7 +1,7 @@
-#COOPTFTSCALE
+#COOPGTTEST
 T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
-30, 20, 1, 10, 20, 400, [0,100,200,300,400], 20, 20, false
+30, 20, 1, 10, 10, 400, [0,100,200,300,400], 20, 20, false
 nr, strat, imit_prob, migrate_prob, omega
 100, DEFECT, .1, 1, 0.5
 100, COOPERATE, .1, .1, 0.5
-50;100;10, TFT, .1, 0.1, 0.5
+100, GT, .1, 0.1, 0.5
