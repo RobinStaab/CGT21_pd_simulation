@@ -214,16 +214,18 @@ def run_experiment(experiment):
             arr[i] = classes.index(arr[i])
         grid = np.array(arr).reshape(experiment['params']['grid_x'], -1)
 
-        colorscale = [[0, 'navy'], [1, 'plum']]
-        font_colors = ['black'] #['white', 'black']
-        fig = ff.create_annotated_heatmap(
-            z=grid,
-            annotation_text=np.array(map_history[snapshot_i-1]).reshape(experiment['params']['grid_x'], -1),
-            colorscale='Phase', font_colors=font_colors,
-            name=f"Epoch: {snapshot_i}",
-            xgap=1.5, ygap=1.5)
-        fig.update_layout(width=800, height=800, title=f"Epoch: {snapshot_i}")
+        # colorscale = [[0, 'navy'], [1, 'plum']]
+        # font_colors = ['black'] #['white', 'black']
+        # fig = ff.create_annotated_heatmap(
+        #     z=grid,
+        #     annotation_text=np.array(map_history[snapshot_i-1]).reshape(experiment['params']['grid_x'], -1),
+        #     colorscale='Phase', font_colors=font_colors,
+        #     name=f"Epoch: {snapshot_i}",
+        #     xgap=1.5, ygap=1.5)
+        # fig.update_layout(width=800, height=800, title=f"Epoch: {snapshot_i}")
         #all_grids.add_trace(fig, row=1, col=experiment['params']['snapshots'].index(snapshot_i)+1)
+
+        fig = vis_grid(grid, snapshot_i)
         if html:
             fig.write_html(f'{exp_dir}/grid_{snapshot_i}.html')
         if png: 

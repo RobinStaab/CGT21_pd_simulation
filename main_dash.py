@@ -30,9 +30,6 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 
-map_colorscale = [[0, '#636EFA'],[1/7, '#EF553B'],[2/7, '#00CC96'],[3/7, '#AB63FA'],[4/7,'#FFA15A'],[5/7, '#19D3F3'],[6/7, '#FF6692'],[1, '#B6E880']]
-
-
 fig = go.Figure()
 poo_plot = go.Figure()
 dpc_plot = go.Figure()
@@ -317,19 +314,9 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
     
     try:
         pot_res = res_queue.get(False)   # Non-Blocking get
-
         print(f"Update: {pot_res['epoch']} - {pot_res['strategies']}")
-        fig = go.Figure(data=go.Heatmap(
-            name=f"Epoch: {pot_res['epoch']}",
-            z=pot_res["grid"],
-            xgap=1.5,
-            ygap=1.5,
-            colorscale=map_colorscale,
-            hoverongaps=False,
-            showscale=False))
-        fig.update_layout(width=800, height=800, title=f"Epoch: {pot_res['epoch']}")
-        
-        fig_cd  = vis_cd(pot_res['df_cd'], map_colorscale)
+        fig_grid = vis_grid(pot_res["grid"], pot_res['epoch'])
+        fig_cd  = vis_cd(pot_res['df_cd'])
         fig_poo = vis_poo(pot_res['df_poo'])
         fig_dpc = vis_dpc(pot_res['df_dpc'])
         fig_cvc = vis_cvc(pot_res['df_cvc'])
@@ -337,7 +324,7 @@ def update_figure(n_intervals, val_T: int = 1, val_R: int = 1, val_P: int = 1, v
         
         #fig_poo = px.line(pot_res['df_poo'], y="res", title='Percentage of Optimum over time')
         print("Done")
-        return fig, fig_cd, fig_poo, fig_dpc, fig_cvc, fig_ppc
+        return fig_grid, fig_cd, fig_poo, fig_dpc, fig_cvc, fig_ppc
     except Empty:
         return dash.no_update
 

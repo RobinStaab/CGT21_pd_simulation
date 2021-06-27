@@ -2,7 +2,7 @@ import numpy as np
 import math
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
+import plotly.colors as co
 import plotly.figure_factory as ff
 from collections import Counter
 
@@ -11,9 +11,8 @@ Strategies = {'RANDOM': 1, 'DEFECT': 2, 'COOPERATE': 3,
 
 rStrategies = {0: 'EMPTY', 1: 'RANDOM', 2: 'DEFECT', 3: 'COOPERATE', 4: 'GT', 5: 'TFT', 6: 'TFTD', 7: 'TF2T'}
 
-fix_colorscale = {'EMPTY': '#636EFA', 'RANDOM': '#EF553B', 'DEFECT': '#00CC96', 'COOPERATE': '#AB63FA',
+fix_colorscale = {'EMPTY': '#BEBEBE', 'RANDOM': '#EF553B', 'DEFECT': '#00CC96', 'COOPERATE': '#AB63FA',
               'GT': '#FFA15A', 'TFT': '#19D3F3', 'TFTD': '#FF6692', 'TF2T': '#B6E880'}
-
 
 def r_up(val, base):
     return base * math.ceil(val/base)
@@ -22,7 +21,7 @@ def vis_dpc(dff):
         df_red = dff.drop('total', axis=1).sort_index(axis=1).transpose()
         ff = df_red.keys().to_list()
         ff.sort(key=Strategies.get)
-        return px.line(df_red, y=ff, title='Defection rate per class over time', labels={"index": "epoch", "value": "Defection rate"})
+        return px.line(df_red, y=ff, title='Defection rate per class over time', labels={"index": "epoch", "value": "Defection rate"}, color_discrete_map=fix_colorscale)
     
 def defection_per_class_over_time(history, classes, min_epoch=-1, max_epoch=-1, agg_step=1, visualize=False):
     """ Returns a dict with the defection rate per class over time and overall
@@ -81,7 +80,7 @@ def defection_per_class_over_time(history, classes, min_epoch=-1, max_epoch=-1, 
         #fig.show()
     return summary_dict, dff, fig
 
-def vis_cd(df, colors=None):
+def vis_cd(df):
         df = df.transpose()
         mid = df['EMPTY']
         df.drop(labels=['EMPTY'], axis=1,inplace = True)
@@ -89,10 +88,10 @@ def vis_cd(df, colors=None):
         ff = df.keys().to_list()
         ff.sort(key=Strategies.get)
         # colorscale = [[strat, fix_colorscale[strat]] for strat in ff]
-        if colors is not None:
-            return px.bar(df, y=ff, title='Class Distribution over time', labels={"index": "epoch", "value": "Class Distribution"})
-        else:
-            return px.bar(df, y=ff, title='Class Distribution over time', labels={"index": "epoch", "value": "Class Distribution"})
+        #if colors is not None:
+            #return px.(df, y=ff, title='Class Distribution over time', labels={"index": "epoch", "value": "Class Distribution"})
+        #else:
+        return px.bar(df, y=ff, title='Class Distribution over time', labels={"index": "epoch", "value": "Class Distribution"}, color_discrete_map=fix_colorscale)
             
 def class_distribution_over_time(graph_history, classes, step_size=1, visualize=False):
 
@@ -172,7 +171,7 @@ def vis_ppc(dff):
         df_red = dff.drop('total', axis=1).sort_index(axis=1).transpose()
         ff = df_red.keys().to_list()
         ff.sort(key=Strategies.get)
-        return px.line(df_red, y=ff, title='Average payoff per class over time', labels={"index": "epoch", "value": "Avg. payoff"})
+        return px.line(df_red, y=ff, title='Average payoff per class over time', labels={"index": "epoch", "value": "Avg. payoff"}, color_discrete_map=fix_colorscale)
 
 def payoff_per_class_over_time(history, classes, agg_step=1, visualize=True):
     """ Returns a dict containing the average payoff for each class at every-point in time
@@ -283,3 +282,15 @@ def percentage_of_optimum(history, cop_val, classes, agg_step=1, visualize=True)
 
 def class_change_over_time(history, classes, agg_step=1):
     raise NotImplementedError
+
+def vis_grid(df_grid, epoch):
+    z_colors = []
+    for row in df_grid:
+        curr = []
+        for value in row:
+            curr.append(list(co.hex_to_rgb(fix_colorscale[rStrategies[value]])))
+        z_colors.append(curr)
+    img_rgb = np.array(z_colors, dtype=np.uint8)
+    fig = px.imshow(img_rgb)
+    fig.update_layout(width=700, height=700, title=f"Epoch: {epoch}")
+    return fig
