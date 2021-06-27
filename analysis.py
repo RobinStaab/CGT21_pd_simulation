@@ -22,7 +22,8 @@ def r_up(val, base):
 
 def vis_dpc(dff):
     df_red = dff.drop('total', axis=1).sort_index(axis=1).transpose()
-    ff = df_red.keys().to_list()
+    ff = list(filter(lambda x: x in list(Strategies.keys()), df_red.keys().to_list()))
+    #print(f"ff: {ff} , strat:{Strategies}", flush=True)
     ff.sort(key=Strategies.get)
     return px.line(df_red, y=ff, title='Defection rate per class over time', labels={"index": "epoch", "value": "Defection rate"}, color_discrete_map=fix_colorscale)
 
@@ -91,9 +92,9 @@ def vis_cd(df):
     ff.sort(key=Strategies.get)
     # colorscale = [[strat, fix_colorscale[strat]] for strat in ff]
     # if colors is not None:
-    # return px.(df, y=ff, title='Class Distribution over time', labels={"index": "epoch", "value": "Class Distribution"})
+    return px.bar(df, y=ff, title='Class Distribution over time', labels={"index": "epoch", "value": "Class Distribution"}, color_discrete_map=fix_colorscale)
     # else:
-    return px.bar(df, y=ff, title='Class Distribution over time for ω = 0.4', labels={"index": "epoch", "value": "Class Distribution"}, color_discrete_map=fix_colorscale)
+    #return px.bar(df, y=ff, title='Class Distribution over time for ω = 0.4', labels={"index": "epoch", "value": "Class Distribution"}, color_discrete_map=fix_colorscale)
 
 
 def class_distribution_over_time(graph_history, classes, step_size=1, visualize=False):
@@ -177,7 +178,8 @@ def class_vs_class_over_time(history, classes, agg_step=1, visualize=True):
 
 def vis_ppc(dff):
     df_red = dff.drop('total', axis=1).sort_index(axis=1).transpose()
-    ff = df_red.keys().to_list()
+    ff = list(filter(lambda x: x in list(Strategies.keys()), df_red.keys().to_list()))
+    #print(f"ff: {ff} , strat:{Strategies}", flush=True)
     ff.sort(key=Strategies.get)
     return px.line(df_red, y=ff, title='Average payoff per class over time', labels={"index": "epoch", "value": "Avg. payoff"}, color_discrete_map=fix_colorscale)
 

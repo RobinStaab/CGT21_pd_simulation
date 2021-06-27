@@ -35,7 +35,7 @@ def generate_player(strategy: Strategy, player_class: str, play_window: int, mig
     elif strategy == "CHAMPION":
         strategy_obj = CHAMPION()
     else:
-        assert False, "Unkown strategy type"
+        assert False, f"Unkown strategy type {strategy}"
 
     return {
         "class": player_class,
