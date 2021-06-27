@@ -209,9 +209,9 @@ def run_experiment(experiment):
     #all_grids = make_subplots(rows=1, cols=len(experiment['params']['snapshots']))
     for snapshot_i in experiment['params']['snapshots']:
         arr = map_history[snapshot_i-1].copy()
-        classes.append('EMPTY')
+        Strategies = {'EMPTY': 0, 'RANDOM': 1, 'DEFECT': 2, 'COOPERATE': 3,'GT': 4, 'TFT': 5, 'TFTD': 6, 'TF2T': 7}
         for i in range(len(arr)):
-            arr[i] = classes.index(arr[i])
+            arr[i] = Strategies[arr[i]]
         grid = np.array(arr).reshape(experiment['params']['grid_x'], -1)
 
         # colorscale = [[0, 'navy'], [1, 'plum']]
