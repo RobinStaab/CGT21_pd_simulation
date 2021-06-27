@@ -11,8 +11,8 @@ Strategies = {'RANDOM': 1, 'DEFECT': 2, 'COOPERATE': 3,
 
 rStrategies = {0: 'EMPTY', 1: 'RANDOM', 2: 'DEFECT', 3: 'COOPERATE', 4: 'GT', 5: 'TFT', 6: 'TFTD', 7: 'TF2T'}
 
-fix_colorscale = {'EMPTY': '#BEBEBE', 'RANDOM': '#EF553B', 'DEFECT': '#00CC96', 'COOPERATE': '#AB63FA',
-              'GT': '#FFA15A', 'TFT': '#19D3F3', 'TFTD': '#FF6692', 'TF2T': '#B6E880'}
+fix_colorscale = {'EMPTY': '#BEBEBE', 'RANDOM': '#19D3F3', 'DEFECT': '#EF553B', 'COOPERATE': '#00CC96',
+              'GT': '#FFA15A', 'TFT': '#AB63FA', 'TFTD': '#FF6692', 'TF2T': '#B6E880'}
 
 def r_up(val, base):
     return base * math.ceil(val/base)
