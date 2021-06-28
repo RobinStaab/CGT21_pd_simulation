@@ -1,0 +1,73 @@
+
+#basecase
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+3, 2, 0.1, 1, 10, 400, [0,50,100,150,200,300,400], 20, 20, False
+nr, strat, imit_prob, migrate_prob, omega
+50, TFT, .1, .1, .5
+50, RANDOM, .1, .1, .5
+50, TF2T, .1, .1, .5
+50, TFTD, .1, .1, .5
+50, GT, .1, .1, .5
+50, DEFECT, .1, .1, .5
+50, COOPERATE, .1, .1, .5
+
+#lowerTFT
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+3, 2, 0.1, 1, 1, 400, [0,50,100,150,200,300,400], 20, 20, False
+nr, strat, imit_prob, migrate_prob, omega
+20, TFT, .1, .1, .5
+50, RANDOM, .1, .1, .5
+50, TF2T, .1, .1, .5
+50, TFTD, .1, .1, .5
+50, GT, .1, .1, .5
+50, DEFECT, .1, .1, .5
+50, COOPERATE, .1, .1, .5
+
+#lowTFT
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+3, 2, 0.1, 1, 1, 400, [0,50,100,150,200,300,400], 20, 20, False
+nr, strat, imit_prob, migrate_prob, omega
+8, TFT, .1, .1, .5
+50, RANDOM, .1, .1, .5
+50, TF2T, .1, .1, .5
+50, TFTD, .1, .1, .5
+50, GT, .1, .1, .5
+50, DEFECT, .1, .1, .5
+50, COOPERATE, .1, .1, .5
+
+
+#DefectEnvironmentImitation
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+3, 2, 0.1, 1, 20, 400, [0,50,100,150,200,300,400], 20, 20, False
+nr, strat, imit_prob, migrate_prob, omega
+5, TFT, .1, .1, .5
+20, RANDOM, .1, .1, .5
+20, TF2T, .1, .1, .5
+20, TFTD, .1, .1, .5
+20, GT, .1, .1, .5
+100, DEFECT, .1, .1, .5
+70, COOPERATE, .1, .1, .5
+
+#DefectEnvironmentImitation5
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+3, 2, 0.1, 1, 20, 400, [0,50,100,150,200,300,400], 20, 20, False
+nr, strat, imit_prob, migrate_prob, omega
+5, TFT, .1, .1, .5
+20, RANDOM, .5, .1, .5
+20, TF2T, .5, .1, .5
+20, TFTD, .5, .1, .5
+20, GT, .5, .1, .5
+100, DEFECT, .5, .1, .5
+70, COOPERATE, .5, .1, .5
+
+#DefectEnvironmentImitation9
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+3, 2, 0.1, 1, 20, 400, [0,50,100,150,200,300,400], 20, 20, False
+nr, strat, imit_prob, migrate_prob, omega
+5, TFT, .1, .1, .5
+20, RANDOM, .9, .1, .5
+20, TF2T, .9, .1, .5
+20, TFTD, .9, .1, .5
+20, GT, .9, .1, .5
+100, DEFECT, .9, .1, .5
+70, COOPERATE, .9, .1, .5
