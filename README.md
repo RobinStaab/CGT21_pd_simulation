@@ -29,7 +29,7 @@ The simulator can be used in one of two ways:
 In order to start the dashboard, simply execute the following from the root directory of the project
 
 ```shell
-python3 main\_dash.py
+python3 main_dash.py
 ```
 
 afterward open a browser at ```127.0.0.0.8050``` or the address that is presented in your console. On the webpage you can dynamically setup experiments and get live results. There is currently no switch to run the ISPD in the web dashboard.
@@ -39,14 +39,14 @@ afterward open a browser at ```127.0.0.0.8050``` or the address that is presente
 You can specify one or multiple experiments in a file called ```experiments.csv```. We included several example setups in the ```report_experiments``` folder. After specification you can execute all experiments by running
 
 ```shell
-python3 run\_experiments.py
+python3 run_experiments.py
 ```
 
 which will automatically put the results in the ```data``` folder with labelling.
 
 #### Experiment Format
 Experiments in experiments.csv can handle two special cases:
-1. sets of the form a:b:c -> one experiment for each of the values
-2. ranges of the form a;b;c -> one experiment for each of the values in range(a,b,c) where a is the start b is the end and c is the step size
+1. sets of the form ```a:b:c``` -> one experiment for each of the values
+2. ranges of the form ```a;b;c``` -> one experiment for each of the values in range(a,b,c) where a is the start b is the end and c is the step size
 
 ## Credits
