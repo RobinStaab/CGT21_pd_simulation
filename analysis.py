@@ -239,7 +239,7 @@ def payoff_per_class_over_time(history, classes, agg_step=1, visualize=True):
 
 
 def vis_poo(df_red):
-    return px.line(df_red, y="res", title='Percentage of Optimum over time for ω = 0.4', labels={"index": "epoch", "res": "Percentage of social optimum"})
+    return px.line(df_red, y="res", title='Percentage of Optimum', labels={"index": "epoch", "res": "Percentage of social optimum"})
 
 
 def percentage_of_optimum(history, cop_val, classes, agg_step=1, visualize=True):
