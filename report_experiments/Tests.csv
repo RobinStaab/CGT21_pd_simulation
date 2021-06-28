@@ -1,0 +1,35 @@
+#SINGLE
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+30, 20, 1, 10, 10, 400, [0,100,200,300,400], 10, 10, false
+nr, strat, imit_prob, migrate_prob, omega
+90, COOPERATE:TFT:GT:TFTD:TF2T, .1, .1, .5
+
+#COOPERATORS
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+30, 20, 1, 10, 10, 400, [0,100,200,300,400], 10, 10, false
+nr, strat, imit_prob, migrate_prob, omega
+20, COOPERATE, .1, .1, .5
+20, TFT, .1, .1, .5
+20, TF2T, .1, .1, .5
+20, GT, .1, .1, .5
+
+#DEFECTORS
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+30, 20, 1, 10, 10, 400, [0,100,200,300,400], 10, 10, false
+nr, strat, imit_prob, migrate_prob, omega
+45, DEFECT, .1, .1, .5
+45, TFTD, .1, .1, .5
+
+#COOP_DEFECT
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+30, 20, 1, 10, 10, 400, [0,100,200,300,400], 10, 10, false
+nr, strat, imit_prob, migrate_prob, omega
+45, COOPERATE, .1, .1, .5
+45, DEFECT, .1, .1, .5
+
+#DEFECT_RANDOM
+T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
+30, 20, 1, 10, 10, 400, [0,100,200,300,400], 10, 10, false
+nr, strat, imit_prob, migrate_prob, omega
+45, DEFECT, .1, .1, .5
+45, RANDOM, .1, .1, .5
