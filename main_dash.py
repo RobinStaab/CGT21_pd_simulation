@@ -55,9 +55,8 @@ app.layout = html.Div(
             children='Controversies in Game Theory 2021 - Repeated Prisoners Dilemma'),
 
         html.P(children='''
-        Made by Fabrice Egger, Robin Staab, Jan Urech, Kim Nik Baumgartner'''),
-        html.P(children='''short explanation of app usage'''),
-        html.P(children=''' If you have any troubles don't hesitate to write us a mail to my kimbau@student.ethz.ch mail :)
+        Made by Fabrice Egger, Robin Staab, Jan Urech, Kim Nik Baumgartner, Nando Käslin'''),
+        html.P(children=''' If you have any troubles don't hesitate to open a github issue :)
     '''),
         html.Div(
             className="content",
