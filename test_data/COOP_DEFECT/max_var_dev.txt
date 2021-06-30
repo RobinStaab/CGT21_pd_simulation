@@ -1,0 +1,6 @@
+name		variance	deviation
+dpc		0.0		0.0
+cd		9.79		3.13
+cvc_rel		1.0		1.0
+ppc		1.73		1.31
+poo_res		0.0		0.02

@@ -4,7 +4,7 @@ T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
 nr, strat, imit_prob, migrate_prob, omega
 90, COOPERATE:TFT:GT:TFTD:TF2T, .1, .1, .5
 
-#COOPERATORS
+#FRIENDLY
 T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
 30, 20, 1, 10, 10, 400, [0,100,200,300,400], 10, 10, false
 nr, strat, imit_prob, migrate_prob, omega
@@ -13,7 +13,7 @@ nr, strat, imit_prob, migrate_prob, omega
 20, TF2T, .1, .1, .5
 20, GT, .1, .1, .5
 
-#DEFECTORS
+#UNFRIENDLY
 T, R, S, P, runs, epochs, snapshots, grid_x, grid_y, infinite
 30, 20, 1, 10, 10, 400, [0,100,200,300,400], 10, 10, false
 nr, strat, imit_prob, migrate_prob, omega
