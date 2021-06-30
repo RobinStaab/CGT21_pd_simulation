@@ -4,9 +4,11 @@
 - Simulation 
   - Simulator, Player and Strategy base implementation (Robin Staab)
   - History Implementation (Jan Urech)
+  - CLI Experiment tool (Jan Urech)
+  - Graph generation (Robin Staab, Jan Urech)
   - Specific strategy implementations (Jan Urech, Nando Käslin, Robin Staab)
   - Dash / Frontend (Kim Baumgartner, Robin Staab)
-  - Styling frontend (small task) (Fabrice Egger)
+  - Styling frontend (Fabrice Egger)
 
 - Run experiments (Jan Urech, Robin Staab, Kim Baumgartner, Fabrice Egger)
 
