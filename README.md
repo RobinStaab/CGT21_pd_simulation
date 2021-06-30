@@ -2,18 +2,20 @@
 This repository contains an RSPD and ISPD implementation for the course "Controversies in Game Theory 2021".
 
 ## Setup
-We recommend setting up a Python 3 conda environment. All dependencies of the project are listed in the ```requirements.txt``` file. 
+We recommend setting up a Python 3 environment in conda on windows and pip on linux/mac. All dependencies of the project are listed in the ```requirements.txt``` file. 
 
-To install via conda use
+To install via conda on windows use
 
 ```shell
 conda env create --name cgt -f requirements.txt
 conda activate cgt
 ```
 
-otherwise you can install requirements via pip using
+To install on linux/mac with pip use
 
 ```
+python3 -m venv .venv
+source .venv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
 
@@ -48,5 +50,3 @@ which will automatically put the results in the ```data``` folder with labelling
 Experiments in experiments.csv can handle two special cases:
 1. sets of the form ```a:b:c``` -> one experiment for each of the values
 2. ranges of the form ```a;b;c``` -> one experiment for each of the values in range(a,b,c) where a is the start b is the end and c is the step size
-
-## Credits
